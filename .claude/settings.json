@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk 'NR>=1071 && NR<=1200' /home/vaibhav/JURISCRIPT/juriscript.html)"
+    ]
+  }
+}

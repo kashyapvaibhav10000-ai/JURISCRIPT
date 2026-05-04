@@ -1,0 +1,2374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JuriScript - Law. Simplified.</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a5c8a' width='100' height='100'/><text x='50' y='60' font-size='50' font-weight='bold' fill='white' text-anchor='middle'>JS</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-white: #ffffff;
+            --bg-surface: #f5f5f5;
+            --text-primary: #111111;
+            --accent-blue: #0a5c8a;
+            --warning-red: #cc0000;
+            --amber-bg: #fff8e1;
+            --amber-text: #b45309;
+            --badge-blue: #0a5c8a;
+            --badge-green: #2d5a3d;
+            --citation-gray: #666666;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+            background: var(--bg-white);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        header {
+            background: var(--bg-white);
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-juri {
+            font-weight: 400;
+        }
+
+        .logo-script {
+            font-weight: 700;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.3rem;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 1rem;
+        }
+
+        .warning-banner {
+            background: var(--warning-red);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0px;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .header-link {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .header-link:hover {
+            text-decoration: underline;
+        }
+
+        /* NAVIGATION */
+        nav {
+            background: var(--bg-surface);
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 76px;
+            z-index: 99;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0;
+            flex-wrap: wrap;
+        }
+
+        nav li {
+            margin: 0;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-primary);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        nav button:hover {
+            background: rgba(10, 92, 138, 0.05);
+        }
+
+        nav button.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        /* MAIN LAYOUT */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* UTILITY */
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 2px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .badge-act {
+            background: var(--badge-blue);
+            color: white;
+        }
+
+        .badge-rules {
+            background: var(--badge-green);
+            color: white;
+        }
+
+        .citation {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--citation-gray);
+            margin-top: 0.3rem;
+            font-style: italic;
+        }
+
+        .citation-link {
+            color: #0a5c8a;
+            text-decoration: none;
+            border-bottom: 1px dotted #0a5c8a;
+            font-style: italic;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0 2px;
+        }
+
+        .citation-link:hover {
+            color: #1a8cd8;
+            border-bottom: 1px solid #1a8cd8;
+            background: rgba(26, 140, 216, 0.08);
+            border-radius: 2px;
+        }
+
+        /* APP WRAPPER / SPLIT PANEL */
+        #app-wrapper {
+            display: flex;
+            position: relative;
+        }
+
+        #app-wrapper.panel-open {
+            height: calc(100vh - 140px);
+            overflow: hidden;
+        }
+
+        #main-panel {
+            flex: 1;
+            min-width: 0;
+            overflow-y: auto;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #law-panel {
+            width: 0;
+            overflow: hidden;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #0d1117;
+            color: #e6edf3;
+            border-left: 1px solid #30363d;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            position: sticky;
+            top: 140px;
+            height: calc(100vh - 140px);
+        }
+
+        #law-panel.open {
+            width: 420px;
+        }
+
+        .law-panel-header {
+            background: #161b22;
+            padding: 0.85rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border-bottom: 1px solid #30363d;
+            flex-shrink: 0;
+        }
+
+        .law-panel-title {
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .law-panel-badge {
+            background: #0a5c8a;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .law-panel-close {
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .law-panel-close:hover { color: #e6edf3; }
+
+        .law-panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .law-panel-section-num {
+            font-family: monospace;
+            color: #0a5c8a;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .law-panel-divider {
+            border: none;
+            border-top: 1px solid #30363d;
+            margin-bottom: 1rem;
+        }
+
+        .law-panel-text {
+            color: #e6edf3;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .law-panel-highlight {
+            background: #f0b429;
+            color: #000;
+            border-radius: 2px;
+            padding: 0 3px;
+        }
+
+        .law-panel-footer {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid #30363d;
+            background: #161b22;
+            flex-shrink: 0;
+        }
+
+        .law-panel-footer a {
+            color: #8b949e;
+            font-size: 0.8rem;
+            text-decoration: none;
+        }
+
+        .law-panel-footer a:hover { color: #e6edf3; }
+
+        /* TOOLTIP */
+        #citation-tooltip {
+            position: fixed;
+            background: #1c2128;
+            color: #e6edf3;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            max-width: 320px;
+            font-size: 0.82rem;
+            line-height: 1.6;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        #citation-tooltip.visible { opacity: 1; }
+
+        .tooltip-key {
+            color: #1a8cd8;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .tooltip-divider {
+            border: none;
+            border-top: 1px solid #30363d;
+            margin: 0.35rem 0;
+        }
+
+        .tooltip-body { margin-bottom: 0.4rem; }
+
+        .tooltip-hint {
+            color: #8b949e;
+            font-style: italic;
+            font-size: 0.75rem;
+        }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+            #law-panel {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100% !important;
+                height: 0;
+                top: auto;
+                border-left: none;
+                border-top: 1px solid #30363d;
+                z-index: 200;
+                transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            #law-panel.open {
+                height: 50vh;
+                width: 100% !important;
+            }
+            #app-wrapper.panel-open {
+                height: auto;
+                overflow: visible;
+            }
+            #citation-tooltip { display: none; }
+        }
+
+        .amber-box {
+            background: var(--amber-bg);
+            border-left: 4px solid var(--amber-text);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0px;
+        }
+
+        .amber-box p {
+            color: var(--amber-text);
+            font-weight: 500;
+            margin: 0;
+        }
+
+        /* SECTION 0: HOW TO USE */
+        .role-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .role-card {
+            background: var(--bg-surface);
+            border: 2px solid #ddd;
+            padding: 1.5rem;
+            border-radius: 0px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .role-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 12px rgba(10, 92, 138, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .role-card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+            color: var(--accent-blue);
+        }
+
+        .role-card-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* SECTION 1: TOPIC MAP */
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .topic-card {
+            background: var(--bg-surface);
+            border: 1px solid #ddd;
+            padding: 1.5rem;
+            border-radius: 0px;
+        }
+
+        .topic-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+        }
+
+        .topic-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .topic-card li {
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .topic-card li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .topic-card li strong {
+            color: var(--text-primary);
+        }
+
+        /* SECTION 2: ROLE GUIDES */
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--accent-blue);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .guide-section {
+            margin-bottom: 2rem;
+        }
+
+        .guide-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .guide-item {
+            background: white;
+            border-left: 4px solid var(--accent-blue);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0px;
+        }
+
+        .guide-item strong {
+            display: block;
+            color: var(--accent-blue);
+            margin-bottom: 0.3rem;
+        }
+
+        /* SECTION 3: DECISION TREES */
+        .tree-container {
+            margin: 2rem 0;
+        }
+
+        .tree-node {
+            background: var(--bg-surface);
+            border: 2px solid var(--accent-blue);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tree-node:hover {
+            background: #f0f8ff;
+            box-shadow: 0 2px 8px rgba(10, 92, 138, 0.2);
+        }
+
+        .tree-node.terminal {
+            border-color: #2d5a3d;
+            background: #f5fdf9;
+        }
+
+        .tree-node.terminal:before {
+            content: "✓ ";
+            color: #2d5a3d;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .tree-branches {
+            margin-left: 2rem;
+            border-left: 2px solid #ddd;
+            padding-left: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* SECTION 4: FAQ */
+        .faq-item {
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 0px;
+            background: white;
+        }
+
+        .faq-question {
+            padding: 1rem;
+            background: var(--bg-surface);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: #efefef;
+        }
+
+        .faq-toggle {
+            color: var(--accent-blue);
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .faq-answer {
+            display: none;
+            padding: 1rem;
+            background: white;
+        }
+
+        .faq-answer.active {
+            display: block;
+        }
+
+        /* SECTION 5: PENALTY MATRIX */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: var(--accent-blue);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            border: 1px solid #333;
+        }
+
+        th:hover {
+            background: #083a56;
+        }
+
+        td {
+            padding: 1rem;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background: var(--bg-surface);
+        }
+
+        tr:hover {
+            background: #f0f8ff;
+        }
+
+        .penalty-disclaimer {
+            background: var(--amber-bg);
+            border-left: 4px solid var(--amber-text);
+            padding: 1rem;
+            margin: 2rem 0;
+            color: var(--amber-text);
+            font-size: 0.9rem;
+            border-radius: 0px;
+        }
+
+        /* SEARCH */
+        .search-box {
+            background: white;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid #ddd;
+            border-radius: 0px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 0px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(10, 92, 138, 0.1);
+        }
+
+        .highlight {
+            background: #ffeb3b;
+            padding: 0.1rem 0.2rem;
+            font-weight: 500;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--text-primary);
+            color: white;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .footer-link {
+            color: #64b5f6;
+            text-decoration: none;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        /* BUTTON */
+        button {
+            font-family: inherit;
+        }
+
+        .btn-print {
+            background: var(--accent-blue);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 0px;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-print:hover {
+            background: #083a56;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            header {
+                padding: 1rem;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+            }
+
+            nav button {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .role-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .topic-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                padding: 0.75rem 1rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.75rem;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* PRINT */
+        @media print {
+            header, nav {
+                position: static;
+            }
+
+            nav button {
+                page-break-inside: avoid;
+            }
+
+            .section {
+                page-break-inside: avoid;
+            }
+
+            .btn-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-juri">Juri</span><span class="logo-script">Script</span>
+            </div>
+            <div class="tagline">Law. Simplified.</div>
+            <div class="subtitle">Drugs & Cosmetics Act 1940 | Amended to 31 Dec 2016</div>
+            <div class="warning-banner">
+                ⚠ This is not legal advice. Verify all information with CDSCO or a qualified legal professional before acting. 
+                <a href="https://cdsco.gov.in" class="header-link" target="_blank">Check for post-2016 amendments →</a>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><button class="nav-btn active" data-section="0">How to Use</button></li>
+            <li><button class="nav-btn" data-section="1">Topic Map</button></li>
+            <li><button class="nav-btn" data-section="2">Role Guides</button></li>
+            <li><button class="nav-btn" data-section="3">Decision Trees</button></li>
+            <li><button class="nav-btn" data-section="4">FAQ</button></li>
+            <li><button class="nav-btn" data-section="5">Penalty Matrix</button></li>
+        </ul>
+    </nav>
+
+    <div id="app-wrapper">
+    <div id="main-panel">
+    <div class="container">
+        <!-- SECTION 0: HOW TO USE -->
+        <section class="section active" data-section="0">
+            <h1>How to Use JuriScript</h1>
+            <p>Select your role below to jump to relevant sections, or explore the full reference using the navigation bar above.</p>
+            
+            <div class="role-cards">
+                <div class="role-card" onclick="navigateToSection(2); switchTab(0);">
+                    <div class="role-card-title">Manufacturer</div>
+                    <div class="role-card-desc">License requirements, GMP compliance, manufacturing standards</div>
+                    <span style="font-size: 0.8rem; color: #666; margin-top: 0.5rem; display: block;">→ Role Guide A</span>
+                </div>
+
+                <div class="role-card" onclick="navigateToSection(2); switchTab(1);">
+                    <div class="role-card-title">Importer</div>
+                    <div class="role-card-desc">Import regulations, license requirements, prohibited drugs</div>
+                    <span style="font-size: 0.8rem; color: #666; margin-top: 0.5rem; display: block;">→ Role Guide B</span>
+                </div>
+
+                <div class="role-card" onclick="navigateToSection(2); switchTab(2);">
+                    <div class="role-card-title">Retailer / Chemist</div>
+                    <div class="role-card-desc">Licensing, prescription records, Schedule H/X restrictions</div>
+                    <span style="font-size: 0.8rem; color: #666; margin-top: 0.5rem; display: block;">→ Role Guide C</span>
+                </div>
+
+                <div class="role-card" onclick="navigateToSection(5);">
+                    <div class="role-card-title">Penalties</div>
+                    <div class="role-card-desc">All offences, violations, fines and imprisonment terms</div>
+                    <span style="font-size: 0.8rem; color: #666; margin-top: 0.5rem; display: block;">→ Penalty Matrix</span>
+                </div>
+
+                <div class="role-card" onclick="navigateToSection(4);">
+                    <div class="role-card-title">Quick Answer?</div>
+                    <div class="role-card-desc">Find answers to common questions about drugs, cosmetics, licensing</div>
+                    <span style="font-size: 0.8rem; color: #666; margin-top: 0.5rem; display: block;">→ FAQ</span>
+                </div>
+
+                <div class="role-card" onclick="navigateToSection(1);">
+                    <div class="role-card-title">Full Reference</div>
+                    <div class="role-card-desc">Comprehensive topic clusters with all sections and rules</div>
+                    <span style="font-size: 0.8rem; color: #666; margin-top: 0.5rem; display: block;">→ Topic Map</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 1: TOPIC MAP -->
+        <section class="section" data-section="1">
+            <h1>Topic Map</h1>
+            <p>Eight major clusters covering all key sections and rules of the Drugs & Cosmetics Act 1940.</p>
+
+            <div class="topic-grid">
+                <!-- Cluster 1 -->
+                <div class="topic-card">
+                    <span class="badge badge-act">ACT</span>
+                    <h3>Definitions & Key Terms</h3>
+                    <ul>
+                        <li><strong>Drug:</strong> All medicines and substances for diagnosis, treatment, mitigation or prevention of disease <span class="citation">[Sec 3(b)]</span></li>
+                        <li><strong>Cosmetic:</strong> Articles for cleansing, beautifying or altering appearance <span class="citation">[Sec 3(aaa)]</span></li>
+                        <li><strong>Adulterated:</strong> Drug containing harmful or toxic substances <span class="citation">[Sec 17A]</span></li>
+                        <li><strong>Spurious:</strong> Drug falsely claiming to be genuine <span class="citation">[Sec 17B]</span></li>
+                        <li><strong>Misbranded:</strong> Drug with false, misleading or incomplete labelling <span class="citation">[Sec 9A]</span></li>
+                    </ul>
+                </div>
+
+                <!-- Cluster 2 -->
+                <div class="topic-card">
+                    <span class="badge badge-rules">RULES</span>
+                    <h3>Licensing & Registration</h3>
+                    <ul>
+                        <li><strong>Manufacturing License:</strong> Form 25/27 for allopathic drugs, granted by State SLA <span class="citation">[Rules 69-70]</span></li>
+                        <li><strong>Retail License:</strong> Form 20/21 for chemists and druggists <span class="citation">[Rule 65]</span></li>
+                        <li><strong>Import License:</strong> Form 8/8A from CDSCO <span class="citation">[Rules 33-43]</span></li>
+                        <li><strong>Renewal Period:</strong> Manufacturing license valid for 5 years <span class="citation">[Rule 70]</span></li>
+                        <li><strong>Licensing Authority:</strong> State authorities for manufacturing/retail, CDSCO for import <span class="citation">[Sec 18]</span></li>
+                    </ul>
+                </div>
+
+                <!-- Cluster 3 -->
+                <div class="topic-card">
+                    <span class="badge badge-rules">RULES</span>
+                    <h3>Manufacturing Standards (GMP)</h3>
+                    <ul>
+                        <li><strong>Mandatory Compliance:</strong> All manufacturers must comply with Schedule M GMP requirements <span class="citation">[Rules 71, 74, 76]</span></li>
+                        <li><strong>Premises:</strong> Designed to prevent contamination, pest entry, cross-contamination <span class="citation">[Schedule M, Part 1]</span></li>
+                        <li><strong>Equipment:</strong> Suitable for clean production with proper calibration and validation <span class="citation">[Schedule M]</span></li>
+                        <li><strong>Personnel:</strong> Qualified pharmacist supervision mandatory <span class="citation">[Rule 65]</span></li>
+                        <li><strong>Quality Systems:</strong> Documented procedures for manufacturing, testing, record-keeping <span class="citation">[Schedule M]</span></li>
+                    </ul>
+                </div>
+
+                <!-- Cluster 4 -->
+                <div class="topic-card">
+                    <span class="badge badge-act">ACT</span>
+                    <h3>Import & Export</h3>
+                    <ul>
+                        <li><strong>Allowed Imports:</strong> Only drugs meeting Indian quality standards may be imported <span class="citation">[Sec 10, Rule 33]</span></li>
+                        <li><strong>Prohibited Imports:</strong> Certain banned and dangerous drugs cannot be imported <span class="citation">[Sec 10, Schedule E1]</span></li>
+                        <li><strong>License Required:</strong> Form 8/8A from CDSCO for all drug imports <span class="citation">[Rules 33-43]</span></li>
+                        <li><strong>Customs Authority:</strong> Drugs inspected under Sea Customs Act. Form 6 filing required <span class="citation">[Sec 11, 12]</span></li>
+                        <li><strong>Quality Certification:</strong> Must provide test reports and manufacturing data <span class="citation">[Rule 35, 36]</span></li>
+                    </ul>
+                </div>
+
+                <!-- Cluster 5 -->
+                <div class="topic-card">
+                    <span class="badge badge-rules">RULES</span>
+                    <h3>Clinical Trials</h3>
+                    <ul>
+                        <li><strong>Definition:</strong> Testing of new drugs in human subjects for safety and efficacy <span class="citation">[Rule 122A-122N]</span></li>
+                        <li><strong>Approval Required:</strong> CDSCO must approve before trial commencement <span class="citation">[Rules 122A, 122C]</span></li>
+                        <li><strong>Ethical Committee:</strong> Independent ethics committee must review and approve <span class="citation">[Rule 122D]</span></li>
+                        <li><strong>Informed Consent:</strong> Subjects must provide written informed consent <span class="citation">[Rule 122E]</span></li>
+                        <li><strong>New Drug Definition:</strong> A drug not yet sold in India <span class="citation">[Rule 122E]</span></li>
+                    </ul>
+                </div>
+
+                <!-- Cluster 6 -->
+                <div class="topic-card">
+                    <span class="badge badge-rules">RULES</span>
+                    <h3>Cosmetics Regulations</h3>
+                    <ul>
+                        <li><strong>Definition:</strong> Articles for cleansing, beautifying or altering appearance <span class="citation">[Sec 3(aaa)]</span></li>
+                        <li><strong>Prohibited Substances:</strong> Cannot contain harmful chemicals, dyes, or preservatives <span class="citation">[Sec 9C, 9D]</span></li>
+                        <li><strong>Labelling Rules:</strong> Must state composition, manufacturer, batch, expiry date <span class="citation">[Rules 144-157]</span></li>
+                        <li><strong>Manufacturing:</strong> Form 28/29 license required. Schedule M GMP applies <span class="citation">[Rules 144-157]</span></li>
+                        <li><strong>Penalties for Non-Compliance:</strong> Up to 1 year imprisonment or ₹20,000 fine <span class="citation">[Sec 27A]</span></li>
+                    </ul>
+                </div>
+
+                <!-- Cluster 7 -->
+                <div class="topic-card">
+                    <span class="badge badge-act">ACT</span>
+                    <h3>Ayurveda / Siddha / Unani</h3>
+                    <ul>
+                        <li><strong>Recognition:</strong> Traditional systems recognized under the Act <span class="citation">[Sec 3(a), 3A]</span></li>
+                        <li><strong>Manufacturing License:</strong> Form 24D for ASU drugs, granted by State SLA <span class="citation">[Rule 150-169]</span></li>
+                        <li><strong>Authoritative Books:</strong> Drugs must match formulae in recognized classical texts <span class="citation">[Sec 3(a)]</span></li>
+                        <li><strong>Quality Standards:</strong> Must comply with pharmacopeial standards <span class="citation">[Schedule M]</span></li>
+                        <li><strong>Labelling:</strong> Must identify system (Ayurveda/Siddha/Unani) on packaging <span class="citation">[Rules 150-169]</span></li>
+                    </ul>
+                </div>
+
+                <!-- Cluster 8 -->
+                <div class="topic-card">
+                    <span class="badge badge-act">ACT</span>
+                    <h3>Penalties & Offences</h3>
+                    <ul>
+                        <li><strong>Spurious Drug:</strong> 10 years to life imprisonment <span class="citation">[Sec 27]</span></li>
+                        <li><strong>Adulterated Drug:</strong> Minimum 3 years imprisonment <span class="citation">[Sec 27]</span></li>
+                        <li><strong>Sale Without License:</strong> 3 years imprisonment + fine <span class="citation">[Sec 18]</span></li>
+                        <li><strong>Misbranded Drug:</strong> 1 year imprisonment + fine <span class="citation">[Sec 28]</span></li>
+                        <li><strong>Obstruct Inspector:</strong> 3 years imprisonment <span class="citation">[Sec 29]</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ROLE GUIDES -->
+        <section class="section" data-section="2">
+            <h1>Role Guides</h1>
+            <p>Specific licensing, obligations and restrictions for each stakeholder type.</p>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab(0)">Guide A: Manufacturer</button>
+                <button class="tab-btn" onclick="switchTab(1)">Guide B: Importer</button>
+                <button class="tab-btn" onclick="switchTab(2)">Guide C: Retailer / Chemist</button>
+            </div>
+
+            <!-- GUIDE A: MANUFACTURER -->
+            <div class="tab-content active">
+                <div class="amber-box">
+                    <p>⚠ Confirm requirements with your State Licensing Authority (SLA) before applying.</p>
+                </div>
+
+                <div class="guide-section">
+                    <h3>License Type & Form</h3>
+                    <div class="guide-item">
+                        <strong>Drug Manufacturing License</strong>
+                        Form 25 (Allopathic) / Form 24D (Ayurveda/Siddha/Unani) / Form 24F (Schedule X drugs)
+                        <span class="citation">[Rules 69-70]</span>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Licensing Authority</h3>
+                    <div class="guide-item">
+                        <strong>State Licensing Authority (SLA)</strong>
+                        Each state government appoints the authority responsible for granting manufacturing licenses
+                        <span class="citation">[Sec 18, Rule 69]</span>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Key Obligations</h3>
+                    <div class="guide-item">
+                        <strong>GMP Compliance (Mandatory)</strong>
+                        All manufacturing must follow Schedule M Good Manufacturing Practices. This includes premises design, equipment calibration, personnel qualification, quality control procedures, and documentation.
+                        <span class="citation">[Schedule M, Rules 71, 74, 76]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Registered Pharmacist Supervision</strong>
+                        Manufacturing or dispensing must be under direct, personal supervision of a registered pharmacist.
+                        <span class="citation">[Rule 65(1), (2)]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Labelling Rules</strong>
+                        All drugs must be properly labelled with name, composition, batch number, manufacturing date, expiry date, and manufacturer details. False or misleading labels are prohibited.
+                        <span class="citation">[Rule 96]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Prohibition on Adulteration & Spurious Manufacture</strong>
+                        Manufacturing, selling or distributing adulterated or spurious drugs is a serious offence. No substandard or contaminated preparations allowed.
+                        <span class="citation">[Sec 17A-17D, Sec 27]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Quality Standards</strong>
+                        All manufactured drugs must meet the standards of the Indian Pharmacopoeia or other recognized pharmacopeias.
+                        <span class="citation">[Sec 8]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Record Keeping</strong>
+                        Maintain manufacturing records, batch records, quality control data, and raw material documentation for minimum 2 years.
+                        <span class="citation">[Schedule M]</span>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Prohibited Acts</h3>
+                    <ul style="list-style: disc; margin-left: 2rem;">
+                        <li>Manufacturing without a valid license <span class="citation">[Sec 18(c)]</span></li>
+                        <li>Manufacturing adulterated drugs (harmful/toxic substances) <span class="citation">[Sec 17A, 27]</span></li>
+                        <li>Manufacturing spurious drugs (false identity/composition) <span class="citation">[Sec 17B, 27]</span></li>
+                        <li>Manufacturing misbranded drugs (false/misleading labels) <span class="citation">[Sec 9A, 28]</span></li>
+                        <li>Non-compliance with GMP <span class="citation">[Schedule M]</span></li>
+                        <li>Using banned drugs or ingredients <span class="citation">[Sec 10, Schedule E1]</span></li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>License Validity & Renewal</h3>
+                    <div class="guide-item">
+                        <strong>Validity:</strong> 5 years from date of grant
+                        <strong>Renewal:</strong> 6 months before expiry. Renewal fee structure specified in Rules.
+                        <span class="citation">[Rule 70]</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GUIDE B: IMPORTER -->
+            <div class="tab-content">
+                <div class="amber-box">
+                    <p>⚠ Confirm requirements with CDSCO (Central authority) before importing any drugs.</p>
+                </div>
+
+                <div class="guide-section">
+                    <h3>License Type & Form</h3>
+                    <div class="guide-item">
+                        <strong>Import License or No Objection Certificate (NOC)</strong>
+                        Form 8 (Standard) / Form 8A (Specific Batches)
+                        <span class="citation">[Rules 33-43]</span>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Licensing Authority</h3>
+                    <div class="guide-item">
+                        <strong>CDSCO (Central Drugs Standards Control Organization)</strong>
+                        Federal authority responsible for drug import licensing and customs coordination.
+                        <span class="citation">[Sec 10, Rules 33-43]</span>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Key Obligations</h3>
+                    <div class="guide-item">
+                        <strong>Quality Standard Compliance</strong>
+                        All imported drugs must meet Indian quality standards as prescribed under the Indian Pharmacopoeia or equivalent.
+                        <span class="citation">[Sec 8]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Prohibited Drug Check</strong>
+                        Cannot import drugs listed in the banned drug schedule (Schedule E1) or those specifically prohibited by CDSCO notification.
+                        <span class="citation">[Sec 10, Schedule E1]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Sea Customs Act Compliance</strong>
+                        All drug imports subject to customs inspection, sea freight regulations, and Form 6 filing.
+                        <span class="citation">[Sec 11, 12]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Test Reports & Certificates</strong>
+                        Must provide analytical reports from recognized laboratories, manufacturing authorization certificate, and quality certificates.
+                        <span class="citation">[Rules 35, 36]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Labelling Compliance</strong>
+                        Imported drugs must have proper labelling with all required information before distribution.
+                        <span class="citation">[Rule 96]</span>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Prohibited Acts</h3>
+                    <ul style="list-style: disc; margin-left: 2rem;">
+                        <li>Importing without valid license/NOC <span class="citation">[Sec 10]</span></li>
+                        <li>Importing banned or prohibited drugs <span class="citation">[Sec 10, Schedule E1]</span></li>
+                        <li>Importing drugs not meeting quality standards <span class="citation">[Sec 8]</span></li>
+                        <li>Importing adulterated or spurious drugs <span class="citation">[Sec 27]</span></li>
+                        <li>False declarations to customs <span class="citation">[Sea Customs Act]</span></li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Process Overview</h3>
+                    <ol style="list-style: decimal; margin-left: 2rem;">
+                        <li>Obtain CDSCO import license (Form 8/8A) <span class="citation">[Rules 33-43]</span></li>
+                        <li>Prepare import documents (manufacturing authorization, test reports) <span class="citation">[Rules 35-36]</span></li>
+                        <li>File Form 6 with customs authority <span class="citation">[Sec 12]</span></li>
+                        <li>Arrange inspection by authorized officer <span class="citation">[Sec 21-23]</span></li>
+                        <li>Obtain clearance and release certification <span class="citation">[Sec 11]</span></li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- GUIDE C: RETAILER / CHEMIST -->
+            <div class="tab-content">
+                <div class="amber-box">
+                    <p>⚠ Confirm requirements with your State Licensing Authority (SLA) before applying.</p>
+                </div>
+
+                <div class="guide-section">
+                    <h3>License Type & Form</h3>
+                    <div class="guide-item">
+                        <strong>Retail Drug License</strong>
+                        Form 20 (General) / Form 20A (Limited) / Form 21 (Cosmetics)
+                        <span class="citation">[Rules 64-65]</span>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Licensing Authority</h3>
+                    <div class="guide-item">
+                        <strong>State Licensing Authority (SLA)</strong>
+                        Each state government appoints the authority responsible for granting retail pharmacy licenses.
+                        <span class="citation">[Sec 18, Rule 65]</span>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Key Obligations</h3>
+                    <div class="guide-item">
+                        <strong>Registered Pharmacist Supervision</strong>
+                        All dispensing must be under direct, personal supervision of a registered pharmacist. Compounding must be by or under supervision of registered pharmacist.
+                        <span class="citation">[Rule 65(1), (2)]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Schedule H Prescription Requirement</strong>
+                        Drugs specified in Schedule H (antibiotics, NSAIDs, corticosteroids, antihistamines) can ONLY be sold on valid medical prescription. Prescription must be recorded in a register.
+                        <span class="citation">[Rule 65(3)]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Schedule H1 Prescription & Record Keeping</strong>
+                        Schedule H1 drugs (benzodiazepines, anticonvulsants) require prescription AND separate register records. Records must be maintained for 3 years.
+                        <span class="citation">[Rule 65(3)(h)]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Schedule X Special Register</strong>
+                        Narcotic and psychotropic drugs (Schedule X) require special register entry with prescriber details, patient name, quantity, batch number.
+                        <span class="citation">[Rule 65(3)]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Prescription Register Maintenance</strong>
+                        All prescriptions for Schedule H drugs must be recorded with: date, prescriber name/address, patient name/address, drug name/quantity, batch number, expiry date. Records kept minimum 2 years.
+                        <span class="citation">[Rule 65(3)(1)]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Cash/Credit Memo Documentation</strong>
+                        For general retail sales, must issue cash/credit memo with pharmacy name, drug name, quantity, date.
+                        <span class="citation">[Rule 65(4)(3)]</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Labelling & Batch Information</strong>
+                        Cannot sell drugs without proper labels. Must ensure batch number and expiry date visible to customer.
+                        <span class="citation">[Rule 96]</span>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Prohibited Acts</h3>
+                    <ul style="list-style: disc; margin-left: 2rem;">
+                        <li>Selling without valid retail license <span class="citation">[Sec 18(c)]</span></li>
+                        <li>Selling Schedule H drugs without prescription <span class="citation">[Rule 65(3)]</span></li>
+                        <li>Selling Schedule H1 drugs without proper records <span class="citation">[Rule 65(3)(h)]</span></li>
+                        <li>Selling expired drugs <span class="citation">[Sec 9A]</span></li>
+                        <li>Selling adulterated or spurious drugs <span class="citation">[Sec 27]</span></li>
+                        <li>Selling without pharmacist supervision <span class="citation">[Rule 65(2)]</span></li>
+                        <li>Failing to maintain prescription records <span class="citation">[Rule 65(3)]</span></li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>License Validity & Renewal</h3>
+                    <div class="guide-item">
+                        <strong>Validity:</strong> 3-5 years (varies by state)
+                        <strong>Renewal:</strong> Apply before expiry. Maintain compliance with all conditions.
+                        <span class="citation">[Rule 65]</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: DECISION TREES -->
+        <section class="section" data-section="3">
+            <h1>Decision Trees</h1>
+            <p>Interactive flowcharts to determine licensing requirements and legal status of drugs.</p>
+
+            <div class="dt-tree-selector">
+                <button class="dt-tree-btn dt-tree-active" onclick="dtSelectTree(1)">Tree 1: Do I Need a License?</button>
+                <button class="dt-tree-btn" onclick="dtSelectTree(2)">Tree 2: Is This Drug Legal to Sell?</button>
+            </div>
+
+            <div class="dt-container" id="dt-container">
+                <div class="dt-progress" id="dt-progress"></div>
+                <div class="dt-card" id="dt-card"></div>
+            </div>
+
+            <style>
+                .dt-tree-selector {
+                    display: flex;
+                    gap: 0.75rem;
+                    margin-bottom: 1.5rem;
+                    flex-wrap: wrap;
+                }
+                .dt-tree-btn {
+                    padding: 0.55rem 1.1rem;
+                    border: 2px solid var(--border);
+                    border-radius: 8px;
+                    background: var(--surface);
+                    color: var(--text-primary);
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                    transition: all 0.2s;
+                }
+                .dt-tree-btn:hover { border-color: var(--accent-blue); }
+                .dt-tree-btn.dt-tree-active {
+                    background: var(--accent-blue);
+                    border-color: var(--accent-blue);
+                    color: #fff;
+                }
+                .dt-container {
+                    max-width: 640px;
+                }
+                .dt-progress {
+                    font-size: 0.8rem;
+                    color: var(--text-secondary);
+                    margin-bottom: 0.75rem;
+                    min-height: 1.2em;
+                }
+                .dt-card {
+                    background: var(--surface);
+                    border: 1px solid var(--border);
+                    border-radius: 12px;
+                    padding: 1.75rem;
+                    animation: dt-fade 0.22s ease;
+                }
+                @keyframes dt-fade {
+                    from { opacity: 0; transform: translateY(6px); }
+                    to   { opacity: 1; transform: translateY(0); }
+                }
+                .dt-question {
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    color: var(--text-primary);
+                    margin-bottom: 1.25rem;
+                    line-height: 1.45;
+                }
+                .dt-answers {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.6rem;
+                }
+                .dt-ans-btn {
+                    text-align: left;
+                    padding: 0.7rem 1rem;
+                    border: 1.5px solid var(--border);
+                    border-radius: 8px;
+                    background: var(--bg);
+                    color: var(--text-primary);
+                    cursor: pointer;
+                    font-size: 0.95rem;
+                    transition: all 0.18s;
+                }
+                .dt-ans-btn:hover {
+                    border-color: var(--accent-blue);
+                    background: var(--surface-hover, rgba(59,130,246,0.07));
+                }
+                .dt-result {
+                    border-radius: 10px;
+                    padding: 1.2rem 1.4rem;
+                    font-size: 1rem;
+                    line-height: 1.55;
+                }
+                .dt-result.allowed {
+                    background: rgba(34,197,94,0.12);
+                    border: 2px solid #22c55e;
+                    color: #15803d;
+                }
+                .dt-result.blocked {
+                    background: rgba(239,68,68,0.1);
+                    border: 2px solid #ef4444;
+                    color: #b91c1c;
+                }
+                .dt-result.conditional {
+                    background: rgba(245,158,11,0.1);
+                    border: 2px solid #f59e0b;
+                    color: #92400e;
+                }
+                .dt-result-icon {
+                    font-size: 1.5rem;
+                    margin-bottom: 0.4rem;
+                }
+                .dt-result-title {
+                    font-weight: 700;
+                    font-size: 1.05rem;
+                    margin-bottom: 0.35rem;
+                }
+                .dt-result-body {
+                    font-size: 0.92rem;
+                    opacity: 0.9;
+                }
+                .dt-actions {
+                    display: flex;
+                    gap: 0.75rem;
+                    margin-top: 1.25rem;
+                    flex-wrap: wrap;
+                }
+                .dt-back-btn, .dt-restart-btn {
+                    padding: 0.5rem 1rem;
+                    border-radius: 7px;
+                    cursor: pointer;
+                    font-size: 0.88rem;
+                    font-weight: 500;
+                    transition: all 0.18s;
+                }
+                .dt-back-btn {
+                    border: 1.5px solid var(--border);
+                    background: var(--surface);
+                    color: var(--text-secondary);
+                }
+                .dt-back-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+                .dt-restart-btn {
+                    border: 1.5px solid var(--accent-blue);
+                    background: var(--accent-blue);
+                    color: #fff;
+                }
+                .dt-restart-btn:hover { opacity: 0.85; }
+            </style>
+
+            <script>
+                const DT_TREES = {
+                    1: {
+                        name: "Do I Need a License?",
+                        nodes: {
+                            q1: {
+                                question: "What activity are you planning?",
+                                answers: [
+                                    { label: "Manufacturing", next: "q2" },
+                                    { label: "Selling / Retailing", next: "q5" },
+                                    { label: "Importing", next: "q7" }
+                                ]
+                            },
+                            q2: {
+                                question: "What type of drug are you manufacturing?",
+                                answers: [
+                                    { label: "Allopathic", next: "r_allopathic" },
+                                    { label: "Ayurveda / Siddha / Unani", next: "r_asu" },
+                                    { label: "Narcotics / Schedule X", next: "r_narcotic" },
+                                    { label: "Repacking Only", next: "r_repack" }
+                                ]
+                            },
+                            q5: {
+                                question: "What is the scope of your sale?",
+                                answers: [
+                                    { label: "Retail (individual customers)", next: "r_retail" },
+                                    { label: "Wholesale (to other retailers)", next: "r_wholesale" }
+                                ]
+                            },
+                            q7: {
+                                question: "Drug imports (all types)",
+                                answers: [
+                                    { label: "Continue", next: "r_import" }
+                                ]
+                            },
+                            r_allopathic: { type: "allowed", icon: "✓", title: "License Required", body: "Form 25/27 | State SLA | 5-year license\n[Rules 69-70]" },
+                            r_asu:        { type: "allowed", icon: "✓", title: "License Required", body: "Form 24D | State SLA | Formulae must match classical texts\n[Rules 150-169]" },
+                            r_narcotic:   { type: "conditional", icon: "⚠", title: "License Required — Stricter Controls", body: "Form 24F | State SLA | Stricter controls apply\n[Rules 69-70]" },
+                            r_repack:     { type: "allowed", icon: "✓", title: "License Required", body: "Form 24B | State SLA | Limited repackaging license\n[Rules 69-70]" },
+                            r_retail:     { type: "allowed", icon: "✓", title: "License Required", body: "Form 20/21 | State SLA\n[Rule 65]" },
+                            r_wholesale:  { type: "allowed", icon: "✓", title: "License Required", body: "Form 20B | State SLA\n[Rule 65]" },
+                            r_import:     { type: "allowed", icon: "✓", title: "License Required", body: "Form 8/8A | CDSCO (Central authority)\n[Rules 33-43]" }
+                        },
+                        start: "q1"
+                    },
+                    2: {
+                        name: "Is This Drug Legal to Sell?",
+                        nodes: {
+                            q1: {
+                                question: "Is the drug listed in Schedule E1 (banned drugs)?",
+                                answers: [
+                                    { label: "Yes", next: "r_banned" },
+                                    { label: "No", next: "q2" }
+                                ]
+                            },
+                            q2: {
+                                question: "Does the drug meet quality standards (Indian Pharmacopoeia)?",
+                                answers: [
+                                    { label: "No", next: "r_substandard" },
+                                    { label: "Yes", next: "q3" }
+                                ]
+                            },
+                            q3: {
+                                question: "Is labelling compliant? (name, manufacturer, batch, expiry)",
+                                answers: [
+                                    { label: "No", next: "r_label" },
+                                    { label: "Yes", next: "q4" }
+                                ]
+                            },
+                            q4: {
+                                question: "Is the drug listed in Schedule H, H1, or X?",
+                                answers: [
+                                    { label: "Yes — Schedule H / H1", next: "r_schedh" },
+                                    { label: "Yes — Schedule X", next: "r_schedx" },
+                                    { label: "No", next: "r_otc" }
+                                ]
+                            },
+                            r_banned:      { type: "blocked",     icon: "✗", title: "Cannot Sell", body: "Banned drug.\n[Sec 10, Schedule E1]" },
+                            r_substandard: { type: "blocked",     icon: "✗", title: "Cannot Sell", body: "Substandard quality.\n[Sec 8, Sec 27]" },
+                            r_label:       { type: "blocked",     icon: "✗", title: "Cannot Sell", body: "Non-compliant labelling.\n[Rule 96, Sec 28]" },
+                            r_schedh:      { type: "conditional", icon: "⚠", title: "Conditional — Prescription Required", body: "Can only sell on valid medical prescription.\n[Rule 65(3)]" },
+                            r_schedx:      { type: "conditional", icon: "⚠", title: "Conditional — Prescription + Special Register", body: "Prescription required + special register entry mandatory.\n[Rule 65(3)]" },
+                            r_otc:         { type: "allowed",     icon: "✓", title: "Legal to Sell OTC", body: "Over-the-counter sale without prescription permitted.\n[Sec 9C]" }
+                        },
+                        start: "q1"
+                    }
+                };
+
+                let dtActiveTree = 1;
+                let dtHistory = [];
+                let dtCurrent = null;
+
+                function dtSelectTree(n) {
+                    dtActiveTree = n;
+                    document.querySelectorAll('.dt-tree-btn').forEach((b, i) => {
+                        b.classList.toggle('dt-tree-active', i + 1 === n);
+                    });
+                    dtHistory = [];
+                    dtRender(DT_TREES[n].start);
+                }
+
+                function dtRender(nodeId) {
+                    dtCurrent = nodeId;
+                    const tree = DT_TREES[dtActiveTree];
+                    const node = tree.nodes[nodeId];
+                    const card = document.getElementById('dt-card');
+                    const prog = document.getElementById('dt-progress');
+
+                    // count questions in path for progress
+                    const qCount = Object.keys(tree.nodes).filter(k => tree.nodes[k].question).length;
+                    const stepNum = dtHistory.filter(id => tree.nodes[id] && tree.nodes[id].question).length + 1;
+
+                    if (node.question) {
+                        prog.textContent = `Step ${stepNum} of ~${qCount}`;
+                        card.innerHTML = `
+                            <div class="dt-question">${node.question}</div>
+                            <div class="dt-answers">
+                                ${node.answers.map(a => `<button class="dt-ans-btn" onclick="dtAnswer('${a.next}')">${a.label}</button>`).join('')}
+                            </div>
+                            ${dtHistory.length > 0 ? `<div class="dt-actions"><button class="dt-back-btn" onclick="dtBack()">← Back</button></div>` : ''}
+                        `;
+                    } else {
+                        prog.textContent = 'Result';
+                        const bodyLines = node.body.replace(/\n/g, '<br>');
+                        card.innerHTML = `
+                            <div class="dt-result ${node.type}">
+                                <div class="dt-result-icon">${node.icon}</div>
+                                <div class="dt-result-title">${node.title}</div>
+                                <div class="dt-result-body">${bodyLines}</div>
+                            </div>
+                            <div class="dt-actions">
+                                ${dtHistory.length > 0 ? `<button class="dt-back-btn" onclick="dtBack()">← Back</button>` : ''}
+                                <button class="dt-restart-btn" onclick="dtRestart()">↺ Restart</button>
+                            </div>
+                        `;
+                    }
+                    // force re-animation
+                    card.style.animation = 'none';
+                    card.offsetHeight;
+                    card.style.animation = '';
+                }
+
+                function dtAnswer(nextId) {
+                    dtHistory.push(dtCurrent);
+                    dtRender(nextId);
+                }
+
+                function dtBack() {
+                    if (dtHistory.length === 0) return;
+                    dtRender(dtHistory.pop());
+                }
+
+                function dtRestart() {
+                    dtHistory = [];
+                    dtRender(DT_TREES[dtActiveTree].start);
+                }
+
+                // init on load
+                document.addEventListener('DOMContentLoaded', function() {
+                    dtRender(DT_TREES[1].start);
+                });
+            </script>
+        </section>
+
+        <!-- SECTION 4: FAQ -->
+        <section class="section" data-section="4">
+            <h1>FAQ - Frequently Asked Questions</h1>
+            <p>Common questions about drugs, cosmetics, licensing, and compliance.</p>
+
+            <div style="margin-top: 2rem;">
+                <!-- GENERAL FAQs -->
+                <h2 style="margin-top: 2rem; color: var(--accent-blue);">GENERAL</h2>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: What is a "new drug" under the Act?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> A "new drug" is a drug that has not been sold in India as a prescription or over-the-counter medication. It includes drugs with a new chemical entity, new indication, new dosage form, or new combination not previously used in India. Before manufacture or clinical trials, CDSCO approval must be obtained. <span class="citation">[Rule 122E]</span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: What is the difference between spurious and adulterated drugs?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> <strong>Spurious drug:</strong> A drug falsely claiming to be of a particular drug or manufacturer. The drug is not what it claims to be. <strong>Adulterated drug:</strong> A drug containing harmful, extraneous, or impure substances that reduce its purity and safety. An adulterated drug may be legitimate but contaminated. Penalties for spurious (7-life years) are harsher than adulterated (3-5 years). <span class="citation">[Sec 17A, 17B, 27]</span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: Who is CDSCO and what do they control?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> CDSCO (Central Drugs Standards Control Organization) is the federal drug regulatory authority under the Ministry of Health. They grant drug import licenses, approve new drugs for clinical trials, establish pharmacopeial standards, and oversee inter-state drug distribution. State authorities handle manufacturing and retail licensing. <span class="citation">[Sec 2, 10, 18, Rules 33-43]</span>
+                    </div>
+                </div>
+
+                <!-- MANUFACTURER FAQs -->
+                <h2 style="margin-top: 2rem; color: var(--accent-blue);">MANUFACTURER</h2>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: Can I manufacture drugs without GMP compliance?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> No. GMP (Good Manufacturing Practices) compliance is MANDATORY for all pharmaceutical manufacturers. The licensing authority will inspect premises, equipment, personnel, and procedures. Failure to comply will result in license cancellation and criminal penalties including imprisonment. <span class="citation">[Schedule M, Rules 71, 74, 76]</span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: Who approves a new drug for manufacture in India?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> For a new drug (not yet sold in India), CDSCO must grant approval after review of clinical data, safety, and efficacy. The manufacturer must submit an application with complete chemistry and pharmacology data. Approval takes 90-180 days typically. Without CDSCO approval, manufacture is illegal. <span class="citation">[Rule 122A-122N]</span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: What happens if my manufacturing license lapses?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> Once your license expires, you CANNOT continue manufacturing. If you manufacture after expiry, you can be prosecuted for manufacturing without a license (3 years imprisonment + fine). You must apply for renewal before expiry. If renewal is applied within 6 months of expiry, a penalty fee applies but reinstatement is possible. <span class="citation">[Sec 18, Rule 70]</span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: Which document specifies GMP standards for my facility?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> Schedule M of the Drugs & Cosmetics Rules specifies all GMP requirements. It covers premises design (location, cleanliness, ventilation), equipment (calibration, maintenance), personnel (qualifications), materials (sourcing, testing), manufacturing processes (documentation, validation), and quality control (testing, batch records). <span class="citation">[Schedule M, Rules 71, 74, 76]</span>
+                    </div>
+                </div>
+
+                <!-- RETAILER FAQs -->
+                <h2 style="margin-top: 2rem; color: var(--accent-blue);">RETAILER / CHEMIST</h2>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: Can I sell a Schedule H drug without prescription?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> NO. Schedule H drugs (antibiotics, NSAIDs, corticosteroids, etc.) can ONLY be sold on a valid prescription from a registered medical practitioner. Selling without prescription is a serious violation (1 year imprisonment + ₹20,000 fine). The prescription must be retained and recorded in your register. <span class="citation">[Rule 65(3)]</span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: How long must I keep prescription records?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> Prescription records for Schedule H drugs must be maintained for minimum 2 years from the date of supply. For Schedule H1 drugs, records must be kept for 3 years. These records must be available for inspection by the licensing authority. Failure to maintain records is an offense. <span class="citation">[Rule 65(3), Rule 65(3)(h)]</span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: What is the difference between Schedule H and Schedule H1 drugs?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> <strong>Schedule H:</strong> Large category of prescription drugs including common antibiotics, NSAIDs, antihistamines. Require prescription and record keeping. <strong>Schedule H1:</strong> Restricted category (benzodiazepines, anticonvulsants) requiring prescription, separate register, and 3-year record retention. H1 drugs have stricter controls and documentation requirements than H. <span class="citation">[Rule 65(3), Rule 65(3)(h)]</span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: What extra rules apply to Schedule X drugs?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> Schedule X contains narcotics and psychotropic drugs (morphine, codeine, certain benzodiazepines). These require: (1) Special register entry (separate from regular prescriptions), (2) Prescriber details recorded, (3) Patient identification recorded, (4) Batch number and expiry recorded, (5) Records kept indefinitely for inspection, (6) Stricter handling and storage. Diversion or loss must be reported to authorities. <span class="citation">[Rule 65(3)]</span>
+                    </div>
+                </div>
+
+                <!-- IMPORTER FAQs -->
+                <h2 style="margin-top: 2rem; color: var(--accent-blue);">IMPORTER</h2>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: Which drugs are banned from import?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> Schedule E1 lists all banned drugs that cannot be imported under any circumstances. This includes certain dangerous substances and drugs deemed unsafe for use. Additionally, CDSCO may issue notifications banning other drugs. Any attempt to import banned drugs results in seizure, criminal prosecution (3 years imprisonment + fine), and forfeiture of goods. <span class="citation">[Sec 10, Schedule E1]</span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: Can I import a banned drug with special permission?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> No. Banned drugs (Schedule E1) cannot be imported under ANY circumstances, including with special permission or exemption. The ban is absolute. The only exception is for authorized research institutions with CDSCO written approval for specific clinical/research purposes. Commercial import of banned drugs is illegal. <span class="citation">[Sec 10, Schedule E1]</span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: What customs rules apply to drug imports?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> Drug imports are regulated under the Sea Customs Act in addition to the Drugs & Cosmetics Act. All shipments must be declared (Form 6), inspected by customs authority, released only after drug inspector clearance. Duties and taxes apply. False declarations are a criminal offense. The entire consignment can be seized if non-compliant. <span class="citation">[Sec 11, 12, Sea Customs Act]</span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Q: Which authority grants import licenses?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>A:</strong> CDSCO (Central Drugs Standards Control Organization), a federal authority under the Ministry of Health, grants all drug import licenses and NOCs. Applications are made in Form 8 (standard) or Form 8A (for specific imported batches). Approval takes 6-8 weeks. State authorities do not grant import licenses. <span class="citation">[Rules 33-43]</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-print" onclick="window.print()">Print FAQ</button>
+        </section>
+
+        <!-- SECTION 5: PENALTY MATRIX -->
+        <section class="section" data-section="5">
+            <h1>Penalty Matrix</h1>
+            <p>Complete reference of all offences, penalties, and punishments under the Drugs & Cosmetics Act 1940.</p>
+            <p><strong>Sortable:</strong> Click any column header to sort the table.</p>
+
+            <div class="table-wrapper">
+                <table id="penaltyTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0)">Offence</th>
+                            <th onclick="sortTable(1)">Section</th>
+                            <th onclick="sortTable(2)">First Conviction</th>
+                            <th onclick="sortTable(3)">Repeat Offence</th>
+                            <th onclick="sortTable(4)">Fine / Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Manufacture of spurious drug</td>
+                            <td>Sec 27(a)</td>
+                            <td>10 years to life</td>
+                            <td>Life imprisonment</td>
+                            <td>Min ₹10 lakh fine or 3x drug value</td>
+                        </tr>
+                        <tr>
+                            <td>Manufacture of adulterated drug (likely to cause death/grievous harm)</td>
+                            <td>Sec 27(a)</td>
+                            <td>10 years to life</td>
+                            <td>Life imprisonment</td>
+                            <td>Min ₹10 lakh fine or 3x drug value</td>
+                        </tr>
+                        <tr>
+                            <td>Manufacture of adulterated drug (other)</td>
+                            <td>Sec 27(b)</td>
+                            <td>3 years to 5 years</td>
+                            <td>Up to 5 years</td>
+                            <td>Min ₹1 lakh fine or 3x drug value</td>
+                        </tr>
+                        <tr>
+                            <td>Manufacture of spurious drug (other than clause a)</td>
+                            <td>Sec 27(c)</td>
+                            <td>7 years to life</td>
+                            <td>Life imprisonment</td>
+                            <td>Min ₹3 lakh fine or 3x drug value</td>
+                        </tr>
+                        <tr>
+                            <td>Manufacture of drug without license</td>
+                            <td>Sec 18(c)</td>
+                            <td>3 years</td>
+                            <td>Up to 5 years</td>
+                            <td>Fine applicable</td>
+                        </tr>
+                        <tr>
+                            <td>Manufacture of other drugs in contravention</td>
+                            <td>Sec 27(d)</td>
+                            <td>1-2 years</td>
+                            <td>Up to 2 years</td>
+                            <td>Min ₹20,000 fine</td>
+                        </tr>
+                        <tr>
+                            <td>Misbranded drug (false/misleading labels)</td>
+                            <td>Sec 28</td>
+                            <td>1 year</td>
+                            <td>2 years</td>
+                            <td>Fine applicable</td>
+                        </tr>
+                        <tr>
+                            <td>Manufacture of cosmetic (spurious/adulterated)</td>
+                            <td>Sec 27A(i)</td>
+                            <td>Up to 3 years</td>
+                            <td>Up to 3 years</td>
+                            <td>Min ₹50,000 fine or 3x value</td>
+                        </tr>
+                        <tr>
+                            <td>Manufacture of cosmetic (other contraventions)</td>
+                            <td>Sec 27A(ii)</td>
+                            <td>Up to 1 year</td>
+                            <td>Up to 1 year</td>
+                            <td>Up to ₹20,000 fine</td>
+                        </tr>
+                        <tr>
+                            <td>Sale of drug without license</td>
+                            <td>Sec 18</td>
+                            <td>3 years</td>
+                            <td>Up to 5 years</td>
+                            <td>Fine applicable</td>
+                        </tr>
+                        <tr>
+                            <td>Sale of Schedule H drug without prescription</td>
+                            <td>Rule 65(3)</td>
+                            <td>1 year</td>
+                            <td>Up to 2 years</td>
+                            <td>Min ₹20,000 fine</td>
+                        </tr>
+                        <tr>
+                            <td>Import of prohibited drug</td>
+                            <td>Sec 10</td>
+                            <td>3 years</td>
+                            <td>Up to 5 years</td>
+                            <td>Fine + confiscation</td>
+                        </tr>
+                        <tr>
+                            <td>Obstruct / assault drug inspector</td>
+                            <td>Sec 29</td>
+                            <td>3 years</td>
+                            <td>Up to 3 years</td>
+                            <td>Fine + damages</td>
+                        </tr>
+                        <tr>
+                            <td>Non-disclosure of manufacturer name</td>
+                            <td>Sec 28</td>
+                            <td>Up to 1 year</td>
+                            <td>Up to 1 year</td>
+                            <td>Min ₹20,000 fine</td>
+                        </tr>
+                        <tr>
+                            <td>Clinical trial without approval</td>
+                            <td>Sec 19</td>
+                            <td>3 years</td>
+                            <td>Up to 5 years</td>
+                            <td>Fine applicable</td>
+                        </tr>
+                        <tr>
+                            <td>Failure to maintain records / non-disclosure of documents</td>
+                            <td>Sec 28A</td>
+                            <td>Up to 1 year</td>
+                            <td>Up to 1 year</td>
+                            <td>Min ₹20,000 fine</td>
+                        </tr>
+                        <tr>
+                            <td>Sale/manufacture against Section 26A notification</td>
+                            <td>Sec 28B</td>
+                            <td>Up to 3 years</td>
+                            <td>Up to 3 years</td>
+                            <td>Up to ₹5,000 fine</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="penalty-disclaimer">
+                <strong>⚠ DISCLAIMER:</strong> All penalty figures and imprisonment terms are sourced directly from Sections 27–30 of the Drugs & Cosmetics Act 1940 as amended to 31 December 2016. Courts have discretion to vary sentences based on aggravating/mitigating circumstances, offender's intent, damage caused, and prior criminal history. This table is for reference only. Always consult a qualified criminal lawyer before relying on these penalties. Laws may have been amended after 2016.
+            </div>
+
+            <button class="btn-print" onclick="window.print()">Print Penalty Matrix</button>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p><strong>JuriScript</strong> — Drugs & Cosmetics Act 1940 Reference Tool</p>
+            <p>Version: 1.0 | Act amended to 31 December 2016</p>
+            <p>
+                <strong>Disclaimer:</strong> JuriScript is not legal advice. It is a reference tool based on the Drugs & Cosmetics Act 1940 and Rules 1945. 
+                Drug laws are complex and frequently amended. Always verify current requirements with:
+            </p>
+            <ul style="margin: 1rem 0 1rem 2rem; list-style: disc;">
+                <li><a href="https://cdsco.gov.in" class="footer-link">CDSCO (Central Drugs Standards Control Organization)</a></li>
+                <li>Your State Licensing Authority (SLA)</li>
+                <li>A qualified legal professional</li>
+            </ul>
+            <p style="margin-top: 1rem;">
+                <strong>Source:</strong> "The Drugs and Cosmetics Act, 1940 and Rules, 1945" as amended up to 31st December 2016. 
+                Ministry of Health & Family Welfare, Government of India.
+            </p>
+            <p style="margin-top: 1rem; font-size: 0.85rem; color: #aaa;">
+                This tool is provided as-is for educational purposes. No warranty is provided regarding accuracy, completeness, or currency of information. 
+                Users rely on this information at their own risk.
+            </p>
+        </div>
+    </footer>
+    </div><!-- end #main-panel -->
+
+    <div id="law-panel">
+        <div class="law-panel-header">
+            <span class="law-panel-title">⚖ Legal Reference</span>
+            <span class="law-panel-badge" id="law-panel-badge"></span>
+            <button class="law-panel-close" onclick="closeLawPanel()">✕</button>
+        </div>
+        <div class="law-panel-body" id="law-panel-body">
+            <div class="law-panel-section-num" id="law-panel-secnum"></div>
+            <hr class="law-panel-divider">
+            <div class="law-panel-text" id="law-panel-text"></div>
+        </div>
+        <div class="law-panel-footer">
+            <a href="file:///home/vaibhav/JURISCRIPT/drugs_act.pdf" target="_blank">Open full PDF →</a>
+        </div>
+    </div><!-- end #law-panel -->
+
+    </div><!-- end #app-wrapper -->
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const section = btn.getAttribute('data-section');
+                navigateToSection(section);
+            });
+        });
+
+        function navigateToSection(sectionNum) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelector(`.section[data-section="${sectionNum}"]`).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.nav-btn[data-section="${sectionNum}"]`).classList.add('active');
+            
+            window.scrollTo(0, 0);
+        }
+
+        // Tab switching
+        function switchTab(tabNum) {
+            const contents = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            contents.forEach(c => c.classList.remove('active'));
+            buttons.forEach(b => b.classList.remove('active'));
+            
+            if (contents[tabNum]) {
+                contents[tabNum].classList.add('active');
+                buttons[tabNum].classList.add('active');
+            }
+        }
+
+        // FAQ Accordion
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const toggle = element.querySelector('.faq-toggle');
+            
+            // Close other FAQs
+            document.querySelectorAll('.faq-answer').forEach(ans => {
+                if (ans !== answer) {
+                    ans.classList.remove('active');
+                    ans.previousElementSibling.querySelector('.faq-toggle').textContent = '+';
+                }
+            });
+            
+            // Toggle current
+            answer.classList.toggle('active');
+            toggle.textContent = answer.classList.contains('active') ? '−' : '+';
+        }
+
+        // Table Sorting
+        let sortDir = {};
+        function sortTable(colIndex) {
+            const table = document.getElementById('penaltyTable');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            const isAsc = !sortDir[colIndex] || sortDir[colIndex] === 'desc';
+            sortDir[colIndex] = isAsc ? 'asc' : 'desc';
+            
+            rows.sort((a, b) => {
+                const aVal = a.cells[colIndex].textContent.trim();
+                const bVal = b.cells[colIndex].textContent.trim();
+                const comparison = aVal.localeCompare(bVal, undefined, {numeric: true});
+                return isAsc ? comparison : -comparison;
+            });
+            
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        // Initial nav setup
+        const firstNavBtn = document.querySelector('.nav-btn');
+        if (firstNavBtn) {
+            firstNavBtn.classList.add('active');
+        }
+
+        // Citation PDF links
+        const citationPages = {
+            "Sec 2": 4, "Sec 3": 5, "Sec 3(a)": 5, "Sec 3(aaa)": 5, "Sec 3(b)": 5,
+            "Sec 3A": 6, "Sec 8": 12, "Sec 9A": 13, "Sec 9C": 13, "Sec 9D": 14,
+            "Sec 10": 15, "Sec 11": 16, "Sec 12": 16, "Sec 17A": 20, "Sec 17B": 21,
+            "Sec 18": 22, "Sec 18(c)": 22, "Sec 19": 23, "Sec 21": 25, "Sec 22": 26,
+            "Sec 23": 27, "Sec 27": 31, "Sec 27(a)": 31, "Sec 27(b)": 31,
+            "Sec 27(c)": 31, "Sec 27(d)": 32, "Sec 27A": 33, "Sec 27A(i)": 33,
+            "Sec 27A(ii)": 33, "Sec 28": 34, "Sec 28A": 34, "Sec 28B": 35,
+            "Sec 29": 35, "Sec 30": 36,
+            "Rule 33": 89, "Rule 35": 91, "Rule 36": 91, "Rules 33-43": 89,
+            "Rules 35-36": 91, "Rule 65": 118, "Rule 65(1)": 118, "Rule 65(2)": 118,
+            "Rule 65(3)": 119, "Rule 65(3)(h)": 120, "Rule 65(4)(3)": 121,
+            "Rules 64-65": 117, "Rule 69": 125, "Rule 70": 126, "Rules 69-70": 125,
+            "Rules 68-76": 124, "Rule 71": 127, "Rule 74": 129, "Rule 76": 130,
+            "Rule 96": 148, "Rule 122A": 178, "Rule 122C": 179, "Rule 122D": 180,
+            "Rule 122E": 181, "Rules 122A-122N": 178, "Rules 144-157": 198,
+            "Rules 150-169": 204,
+            "Schedule M": 312, "Schedule M, Part 1": 313, "Schedule H": 380,
+            "Schedule H1": 392, "Schedule X": 398, "Schedule E1": 360
+        };
+
+        const PDF_BASE = "file:///home/vaibhav/JURISCRIPT/drugs_act.pdf";
+
+        const legalText = {
+            "Sec 2": "2. Application of other laws not barred.\n\nThe provisions of this Act shall be in addition to and not in derogation of, the Dangerous Drugs Act, 1930, and any other law for the time being in force.",
+            "Sec 3": "3. Definitions.\n\nIn this Act, unless there is anything repugnant in the subject or context:\n\n(a) 'Ayurvedic, Siddha or Unani drug' includes all medicines intended for internal or external use for or in the diagnosis, treatment, mitigation or prevention of disease or disorder in human beings or animals, and manufactured exclusively in accordance with the formulae described in the authoritative books of Ayurvedic, Siddha and Unani Tibb systems of medicine.\n\n(aaa) 'cosmetic' means any article intended to be rubbed, poured, sprinkled or sprayed on, or introduced into, or otherwise applied to, the human body or any part thereof for cleansing, beautifying, promoting attractiveness, or altering the appearance.\n\n(b) 'drug' includes all medicines for internal or external use of human beings or animals and all substances intended to be used for or in the diagnosis, treatment, mitigation or prevention of any disease or disorder in human beings or animals.",
+            "Sec 3(a)": "Section 3(a) — 'Ayurvedic, Siddha or Unani drug'\n\nIncludes all medicines intended for internal or external use for or in the diagnosis, treatment, mitigation or prevention of disease or disorder in human beings or animals, and manufactured exclusively in accordance with the formulae described in the authoritative books of Ayurvedic, Siddha and Unani Tibb systems of medicine, specified in the First Schedule.",
+            "Sec 3(aaa)": "Section 3(aaa) — 'Cosmetic'\n\nMeans any article intended to be rubbed, poured, sprinkled or sprayed on, or introduced into, or otherwise applied to, the human body or any part thereof for cleansing, beautifying, promoting attractiveness, or altering the appearance, and includes any article intended for use as a component of cosmetic.",
+            "Sec 3(b)": "Section 3(b) — 'Drug'\n\n'Drug' includes—\n(i) all medicines for internal or external use of human beings or animals;\n(ii) all substances intended to be used for or in the diagnosis, treatment, mitigation or prevention of any disease or disorder in human beings or animals, including preparations applied on human body for the purpose of repelling insects like mosquitoes;\n(iii) such substances (other than food) intended to affect the structure or any function of the human body or intended to be used for the destruction of vermin or insects which cause disease in human beings or animals;\n(iv) all substances intended for use as components of a drug including empty gelatin capsules.",
+          "Sec 3A": "Section 3A — Construction of references to any law not in force or any functionary not in existence in the State of Jammu and Kashmir.",
+          "Sec 4": "Section 4 — Presumption as to poisonous substances.",
+          "Sec 8": "8. Standards of quality.",
+          "Sec 9": "9. Misbranded drugs.",
+          "Sec 9A": "9A. Adulterated drugs.",
+          "Sec 9B": "9B. Spurious drugs.",
+          "Sec 9C": "9C. Misbranded cosmetics.",
+          "Sec 9D": "9D. Spurious cosmetics.",
+          "Sec 10": "10. Prohibition of import of certain drugs or cosmetics.",
+          "Sec 17A": "17A. Adulterated drugs.—For the purposes of this Chapter, a drug shall be deemed to be adulterated—\n\n(a) if it consists in whole or in part, of any filthy, putrid or decomposed substance; or\n(b) if it has been prepared, packed or stored under insanitary conditions whereby it may have been contaminated with filth or whereby it may have been rendered injurious to health; or\n(c) if its container is composed, in whole or in part, of any poisonous or deleterious substance which may render the contents injurious to health; or\n(d) if it bears or contains, for the purposes of colouring only, a colour other than one which is prescribed; or\n(e) if it contains any harmful or toxic substance which may render it injurious to health; or\n(f) if any substance has been mixed therewith so as to reduce its quality or strength.",
+          "Sec 17B": "17B. Spurious drugs.—For the purposes of this Chapter, a drug shall be deemed to be spurious—\n\n(a) if it is manufactured under a name which belongs to another drug; or\n(b) if it is an imitation of, or is a substitute for, another drug or resembles another drug in a manner likely to deceive or bears upon it or upon its label or container the name of another drug unless it is plainly and conspicuously marked so as to reveal its true character and its lack of identity with such other drug; or\n(c) if the label or container bears the name of an individual or company purporting to be the manufacturer of the drug, which individual or company is fictitious or does not exist; or\n(d) if it has been substituted wholly or in part by another drug or substance; or\n(e) if it purports to be the product of a manufacturer of whom it is not truly a product.",
+          "Sec 18": "18. Prohibition of manufacture and sale of certain drugs and cosmetics.",
+          "Sec 19": "19. Pleas.",
+          "Sec 27": "27. Penalty for manufacture, sale, etc., of drugs in contravention of this Chapter.",
+          "Sec 27A": "27A. Penalty for manufacture, sale, etc., of cosmetics in contravention of this Chapter.",
+          "Sec 27A(i)": "Section 27A(i) — Penalty: Spurious or Adulterated Cosmetic.",
+          "Sec 27A(ii)": "Section 27A(ii) — Penalty: Other Cosmetic Contraventions.",
+          "Sec 28": "28. Penalty for non-disclosure of the name of the manufacturer, etc.",
+          "Sec 28A": "28A. Penalty for not keeping documents, etc., and for non-disclosure of information.",
+          "Sec 28B": "28B. Penalty for manufacture, etc., of drugs or cosmetics in contravention of section 26A.",
+          "Sec 29": "29. Penalty for use of Government Analyst's report for advertising.",
+          "Rule 65": "Rule 65. Condition of licences.\n\nLicences in Forms 20, 20-A, 20-B, 20-F, 20-G, 21 and 21-B shall be subject to the conditions stated therein and to the following general conditions:\n\n(1) Any drug shall, if compounded or made on the licensee's premises, be compounded or made by or under the direct and personal supervision of a registered Pharmacist.\n\n(2) The supply, otherwise than by way of wholesale dealing, of any drug supplied on the prescription of a Registered Medical Practitioner shall be effected only by or under the personal supervision of a registered Pharmacist.\n\n(3) The supply of any drug (other than those specified in Schedule X) on a prescription of a Registered Medical Practitioner shall be recorded at the time of supply in a prescription register specially maintained for the purpose.",
+          "Rule 65(1)": "Rule 65(1) — Compounding by Registered Pharmacist.",
+          "Rule 65(2)": "Rule 65(2) — Supply under Pharmacist Supervision.",
+          "Rule 65(3)": "Rule 65(3) — Prescription Register Requirements.",
+          "Rule 65(3)(h)": "Rule 65(3)(h) — Schedule H1 Separate Register.",
+          "Rule 69": "Rule 69 — Grant of licence to manufacture drugs.",
+          "Rule 70": "Rule 70 — Duration and renewal of licences.",
+          "Rule 71": "Rule 71 — Conditions of licences to manufacture for sale.",
+          "Rule 74": "Rule 74 — Requirements and conditions to be complied with by licensees.",
+          "Rule 76": "Rule 76 — Conditions of manufacture for sale of drugs.",
+          "Rule 122E": "Rule 122E — Definition of 'new drug'.",
+          "Schedule M": "Schedule M — Good Manufacturing Practices (GMP).",
+          "Schedule M, Part 1": "Schedule M, Part 1 — General Requirements for Premises.",
+          "Schedule H": "Schedule H — List of drugs to be sold by retail only on the prescription of a Registered Medical Practitioner.",
+          "Schedule H1": "Schedule H1 — List of drugs for special prescription and register requirements.",
+          "Schedule X": "Schedule X — Psychotropic substances and drugs requiring special prescription controls.",
+          "Schedule E1": "Schedule E1 — Chemicals and their precursors.",
+          "Sec 6": "6. Subs. by G.S.R. 889(E), dt. 12.12.2014.\n\n633\n(D) The Expert Committee shall examine the report of serious adverse event of\ndeath and give its recommendations to the Licensing Authority for the\npurpose of arriving at the cause of the adverse event with in 1[one hundred\nand five days of the occurrence of the adverse event,] and the expert\ncommittee while examining the event, may take into consideration, the\nreports of the Investigator, Sponsor or his representative whosoever had\nobtained permission from the Licensing Authority for conducting the\nclinical trial and the Ethics Committee.\n(E) In the case of clinical trial related death, the Expert Committee shall also\nrecommend the quantum of compensation to be paid by the Sponsor or his\nrepresentative, whosoever had obtained permission from the Licensing\nAuthority as defined under Rule 21(b) for conducting the clinical trial.\n(F) The Licensing Authority shall consider the recommendations of the Expert\nCommittee and shall determine the cause of death and pass orders as\ndeemed necessary.\n(G) In case of clinical trial related death, the Licensing Authority, after\nconsidering the recommendations of the Expert Committee, shall decide\nthe quantum of compensation to be paid by the Sponsor or his\nrepresentative, whosoever had obtained permission from the Licensing\nAuthority for conducting the clinical trial and shall pass orders as deemed\nnecessary within 1[one hundred and fifty days of the occurrence of the\nadverse event].\n(ii) Cases of serious adverse events, other than deaths, shall be examined as under:\n(A) The Sponsor or his representative, whosoever had obtained permission\nfrom the Licensing Authority for conducting the clinical trial, and the\nInvestigator shall forward their reports on serious adverse event, after\ndue analysis, to the Licensing Authority as defined under Rule 21(b),\nChairman of the Ethics Committee and the head of the Institution where\nthe trial has been conducted within 1[fourteen days] of occurrence of the\nserious adverse event.\n(B) The Ethics Committee shall forward its report on the serious adverse\nevent, after due analysis along with its opinion regarding the financial\ncompensation, if any, to be paid by the Sponsor or his representative,\nwhosoever had obtained permission from the Licensing Authority as\ndefined under Rule 21(b) for conducting the clinical trial, to the\nLicensing Authority within 1[thirty days] of occurrence of the serious\nadverse event.\n(C) The Licensing Authority shall determine the cause of injury and pass\norder as deemed necessary. The Licensing Authority shall have the\noption to constitute an independent Expert Committee, wherever\nconsidered necessary, to examine such serious adverse events of injury,\nwhich will recommend to the Licensing Authority for arriving at the",
+          "Sec 7": "7. .\n\nCommitments:\n(i)\nI have reviewed the clinical protocol and agree that it contains all the necessary\ninformation\nto conduct the study. I will not begin the study until all necessary Ethics\nCommittee and regulatory approvals have been obtained.\n(ii)\nI agree to conduct the study in accordance with the current protocol. I will not\nimplement any deviation from or changes of the protocol without agreement by the Sponsor\nand prior review and documented approval / favorable opinion from the Ethics Committee of the\namendment, except where necessary to eliminate an immediate hazard(s) to the trial\nSubjects or when the change(s) involved are only logistical or administrative in nature.\n(iii)\nI agree to personally conduct and/or supervise the clinical trial at my site.\n(iv)\nI agree to inform all Subjects, that the drugs are being used for investigational purposes\nand I will ensure that the requirements relating to obtaining informed consent and ethics\ncommittee review and approval specified in the GCP guidelines are met.\n(v)\nI agree to report to the Sponsor all adverse experiences that occur in the course of the\ninvestigation(s) in accordance with the regulatory and GCP guidelines.\n(vi)\nI have read and understood the information in the Investigator's brochure, including the\npotential risks and side effects of the drug.\n(vii)\nI agree to ensure that all associates, colleagues and employees assisting in the conduct\nof the study are suitably qualified and experienced and they have been informed about their\nobligations in meeting their commitments in the trial.\n(viii)\nI agree to maintain adequate and accurate records and to make those records available\nfor audit / inspection by the Sponsor, Ethics Committee, Licensing Authority or their authorized\nrepresentatives, in accordance with regulatory and GCP provisions. I will fully cooperate with\nany study related audit conducted by regulatory officials or authorized representatives of the\nSponsor.\n(ix)\nI agree to promptly report to the Ethics Committee all changes in the clinical trial\nactivities and all unanticipated problems involving risks to human Subjects or others.\n(x)\nI agree to inform all unexpected serious adverse events to the Sponsor as well as the\nEthics Committee within seven days of their occurence.\n(xi)\nI will maintain confidentiality of the identification of all participating study patients and\nassure security and confidentiality of study data.\n(xii)\nI agree to comply with all other requirements, guidelines and statutory obligations as\napplicable to clinical Investigators participating in clinical trials",
+          "Sec 7A": "7A. .\n\nSections 5 and 7 not to apply to Ayurvedic, Siddha or Unani\ndrugs.\nCHAPTER III\nIMPORT OF DRUGS AND COSMETICS",
+          "Sec 8": "8. Study Conduct stating the types of study activities that would be included in this section\n\nwould be: medical history, type of physical examination, blood or urine testing, electrocardiogram\n(ECG), diagnostic testing such as pulmonary function tests, symptom measurement, dispensation and\nretrieval of medication, Subject cohort assignment, adverse event review, etc.\nEach visit should be described separately as Visit 1, Visit 2, etc.\nDiscontinued Subjects: Describes the circumstances for Subject withdrawal, dropouts, or other\nreasons for discontinuation of Subjects . State how dropouts would be managed and if they would be\nreplaced, describe the method of handling of protocol waivers, if any. The person(s) who approves all\nsuch waivers should be identified and the criteria used for specific waivers should be provided.\nDescribes how protocol violations will be treated, including conditions where the study will be\nterminated for non-compliance with the protocol.",
+          "Sec 9C": "9C. Misbranded cosmetics.—For the purposes of this chapter, a cosmetic shall be deemed to be\n\nmisbranded—\n(a) if it contains a colour which is not prescribed; or\n(b) if it is not labelled in a prescribed manner; or\n(c) if the label or container or anything accompanying the cosmetic bears any statement which is\nfalse or misleading in any particular.",
+          "Sec 10": "10. Adverse Events (See Appendix XI): Description of expected adverse events should be given.\n\nProcedures used to evaluate an adverse event should be described.",
+          "Sec 10A": "10A. .\n\nPower of Central Government to prohibit import of drugs and\ncosmetics in public interest.",
+          "Sec 11": "11. Ethical Considerations: Give the summary of:\n\n(a) Risk/benefit assessment:\n(b) Ethics Committee review and communications.\n(c) Informed consent process.\n(d) Statement of Subject confidentiality including ownership of data and coding procedures.",
+          "Sec 12": "12. Study Monitoring and Supervision: A description of study monitoring policies and procedures\n\nshould be provided along with the proposed frequency of site monitoring visits, and who is expected to\nperform monitoring.\nCase Record Form (CRF) completion requirements, including who gets which copies of the forms\nand any specifics required in filling out the forms CRF correction requirements, including who is\nauthorized to make corrections on the CRF and how queries about study data are handled and how\nerrors, if any, are to be corrected should be stated.\nInvestigator study files, including what needs to be stored following study completion should be\ndescribed.",
+          "Sec 15": "15. Statement that in the case of placebo controlled trial, the placebo administered to the\n\nsubjects shall not have any therapeutic effect.",
+          "Sec 33A": "33A. .\n\nStandards of quality.\nMisbranded drugs.\nAdulterated drugs.\nSpurious drugs.\nMisbranded cosmetics.\nSpurious cosmetics.\nProhibition of manufacture and sale of certain drugs\nand cosmetics.\nDisclosure of the name of the manufacturer, etc.\nMaintenance of records and furnishing of information.\nPleas.\nGovernment Analysts.\nInspectors.\nPowers of Inspectors.\nProcedure of Inspectors.\nPersons bound to disclose place where drugs or cosmetics\nare manufactured or kept.\nReports of Government Analysts.\nPurchaser of drug or cosmetic enabled to obtain test or analysis.\nPower of Central Government to prohibit manufacture, etc.,\nof drug and cosmetic in public interest.\nPenalty for manufacture, sale, etc., of drugs in contravention\nof this Chapter.\nPenalty for manufacture, sale, etc., of cosmetics in\ncontravention of this Chapter.\nPenalty for non-disclosure of the name of the manufacturer, etc.\nPenalty for not keeping documents, etc., and for non-disclosure\nof information.\nPenalty for manufacture, etc. of drugs or cosmetics\nin contravention of section 26A.\nPenalty for use of Government Analyst‘s report for advertising.\nPenalty for subsequent offences.\nConfiscation.\nApplication of provisions to Government departments.\nCognizance of offences.\nPower of Court to implead the manufacturer, etc.\nPower of Central Government to make rules.\nChapter not to apply to Ayurvedic, Siddha or Unani drugs.\nCHAPTER IV A\nPROVISIONS RELATING TO AYURVEDIC SIDDHA AND UNANI DRUGS",
+          "Sec 33B": "33B. .\n\nApplication of Chapter IV A.\n4\nSections",
+          "Sec 33E": "33E. .\n\n33EE.\n33EEA.\n33EEB.\n33EEC.\n33EED.",
+          "Sec 33O": "33O. .\n\nAyurvedic, Siddha and Unani Drugs Technical\nAdvisory Board.\nThe Ayurvedic, Siddha and Unani Drugs Consultative\nCommittee.\nMisbranded drugs.\nAdulterated drugs.\nSpurious drugs.\nRegulation of manufacture for sale of Ayurvedic,\nSiddha and Unani drugs.\nProhibition of manufacture and sale of certain\nAyurvedic, Siddha and Unani drugs.\nPower of Central Government to prohibit manufacture,\netc., of Ayurvedic, Siddha or Unani drugs in public\ninterest.\nGovernment Analysts.\nInspectors.\nApplication of provisions of sections 22, 23, 24 and",
+          "Sec 25": "25. Particulars regarding the precautions taken during the manufacture to ensure that aseptic\n\nconditions are maintained.",
+          "Sec 38": "38. Statement to accompany imported drugs. All consignments of drugs sought to be\n\nimported shall be accompanied by an invoice or other statement showing the name and\naddress of the manufacturer and the name and quantities of the drugs.",
+          "Sec 3": "3. The word ―Chairman of the Expert Committee with a copy of the report to‖ omitted by\n\nG.S.R. 889(E), dt. 12.12.2014.",
+          "Sec 18": "18. The theoretical yield and actual productions yield and packing particulars indicating the size and\n\nquantity of finished packings.",
+          "Sec 9B": "9B. Spurious drugs.— For the purposes of this Chapter, a drug shall be deemed to be spurious—\n\n(a) if it is imported under a name which belongs to another drug; or\n(b) if it is an imitation of, or a substitute for, another drug or resembles another drug in a manner\nlikely to deceive or bears upon it or upon its label or container the name of another\ndrug unless it is plainly and conspicuously marked so as to reveal its true character and its\nlack of identity with such other drug; or\n(c) if the label or the container bears the name of an individual or company purporting to be the\nmanufacturer of the drug, which individual or company is fictitious or does not exist; or\n(d) if it has been substituted wholly or in part by another drug or substance; or\n(e) if it purports to be the product of a manufacturer of whom it is not truly a product.",
+          "Sec 9D": "9D. Spurious cosmetics.—For the purposes of this Chapter, a drug shall be deemed to be spurious,—\n\n(a) if it is imported under the name which belongs to another cosmetic; or\n(b) if it is an imitation of, or is a substitute for, another cosmetic or resembles another cosmetic in a\nmanner likely to deceive or bears upon it or upon its label or container the name of another cosmetic,\nunless it is plainly or conspicuously marked so as to reveal its true character and its lack of identity with\nsuch other cosmetic; or\n(c) if the label or the container bears the name of an individual or company purporting to be the\nmanufacturer of the cosmetic, which individual or company is fictitious or does not exist; or\n(d) if it purports to be the product of a manufacturer of whom it is not truly a product.]\n1",
+          "Sec 14": "14. Data Analysis:\n\nProvide details of the statistical approach to be followed including sample size, how the\nsample size was determined, including assumptions made in making this determination, efficacy\nendpoints (primary as well as secondary) and safety endpoints.\nStatistical analysis: Give complete details of how the results will be analyzed and reported along\nwith the description of statistical tests to be used to analyze the primary and secondary endpoints\ndefined above. Describe the level of significance, statistical tests to be used, and the methods used for\nmissing data; method of evaluation of the data for treatment failures, non-compliance, and Subject\nwithdrawals; rationale and conditions for any interim analysis if planned.\nDescribe statistical considerations for Pharmacokinetic (PK) analysis, if applicable.",
+          "Sec 16": "16. Appendices: Provide a study synopsis, copies of the informed consent documents (patient\n\ninformation sheet, informed consent form etc.); CRF and other data collection forms; a summary of\nrelevant pre-clinical safety information and any other documents referenced in the clinical protocol.\nAPPENDIX XI\nData Elements for reporting serious adverse events occuring in a clinical trial",
+          "Sec 17A": "17A. Adulterated drugs.—For the purposes of this Chapter, a drug shall be deemed to be adulterated,—\n\n(a) if it consists in whole or in part, of any filthy, putrid or decomposed substance; or\n(b) if it has been prepared, packed or stored under insanitary conditions whereby it may have been\ncontaminated with filth or whereby it may have been rendered injurious to health; or\n(c) if its container is composed, in whole or in part, of any poisonous or deleterious substance which\nmay render the contents injurious to health; or\n(d) if it bears or contains, for the purposes of colouring only, a colour other than one which is\nprescribed; or\n(e) if it contains any harmful or toxic substance which may render it injurious to health; or\n(f) if any substance has been mixed therewith so as to reduce its quality or strength.",
+          "Sec 17B": "17B. Spurious drugs.—For the purposes of this Chapter, a drug shall be deemed to be spurious,—\n\n(a) if it is manufactured under a name which belongs to another drug; or\n(b) if it is an imitation of, or is a substitute for, another drug or resembles another drug in a manner\nlikely to deceive or bears upon it or upon its label or container the name of another drug unless\nit is plainly and conspicuously marked so as to reveal its true character and its lack of identity with such\nother drug; or\n(c) if the label or container bears the name of an individual or company purporting to be the\nmanufacturer of the drug , which individual or company is fictitious or does not exist; or\n(d) if it has been substituted wholly or in part by another drug or substance; or\n(e) if it purports to be the product of a manufacturer of whom it is not truly a product.",
+          "Sec 17C": "17C. Misbranded cosmetics.— For the purposes of this Chapter, a cosmetic shall be deemed to be\n\nmisbranded, -(a) if it contains a colour which is not prescribed; or\n(b) if it is not labelled in the prescribed manner; or\n(c) if the label or container or anything accompanying the cosmetic bears any statement which is\nfalse or misleading in any particular.",
+          "Sec 17D": "17D. Spurious cosmetics.—For the purposes of this Chapter, a cosmetic shall be deemed to be spurious,-(a) if it is manufactured under a name which belongs to another cosmetic; or\n\n(b) if it is an imitation of, or a substitute for, another cosmetic or resembles another cosmetic in\na manner likely to deceive or bears upon it or upon its label or container the name of another cosmetic\nunless it is plainly and conspicuously marked so as to reveal its true character and its lack of identity with\nsuch other cosmetic; or\n(c) if the label or container bears the name of an individual or a company purporting to be the\nmanufacturer of the cosmetic which individual or company is fictitious or does not exist; or\n(d) if it purports to be the product of a manufacturer of whom it is not truly a product.]\n2\n[17E Adulterated cosmetics.- For the purposes of this Chapter, a cosmetic shall be deemed to be\nadulterated,(a) if it consists in whole or in part, of any filthy, putrid or decomposed substance; or\n(b) if it has been prepared, packed or stored under insanitary conditions whereby it may have been\ncontaminated with filth or whereby it may have been rendered injurious to health; or\n(c) if its container is composed, in whole or in part, of any poisonous or deleterious substance which may\nrender the contents injurious to health; or\n(d) if it bears or contains, for purposes of colouring only, a colour other than one which is prescribed; or\n(e) if it contains any harmful or toxic substance which may render it injurious to health; or\n(f) if any substance has been mixed therewith so as to reduce its quality or strength.]",
+          "Sec 19": "19. Records of sterilization in case of parenteral preparations which are heat sterilized\n\nincluding particulars of time, temperature and pressure employed. Such records should be\nmarked to relate to the batch sterilized.",
+          "Sec 21": "21. Counter-signature of the head of the testing units or other approved person-in-charge of testing\n\nfor having verified the batch records and for having released and batch for sale and distribution, the\nquantity released and date of release.",
+          "Sec 9": "9. Study Treatment\n\n(a) Dosing schedule (dose, frequency, and duration of the experimental treatment) Describe the\nadministration of placebos and/or dummy medications if they are part of the treatment plan. If\napplicable, concomitant drug(s), their doses, frequency, and duration of concomitant treatment should be\nstated.\n(b) Study drug supplies and administration: A statement about who is going to provide the study\nmedication and that the investigational drug formulation has been manufactured following all\nregulations\nDetails of the product stability, storage requirements and dispensing requirements\nshould be provided.\n(c) Dose modification for study drug toxicity: Rules for changing the dose or stopping the study drug\nshould be provided.\n(d) Possible drug interactions.\n(e) Concomitant therapy: The drugs that are permitted during the study and the conditions under\nwhich they may be used are detailed here. Describe the drugs that a Subject is not allowed to use during\n629\nparts of or the entire study. If any washout periods for prohibited medications are needed prior to\nenrolment, these should be described here.\n(f) Blinding procedures: A detailed description of the blinding procedure if the study employs a blind\non the Investigator and/or the Subject.\n(g) Unblinding procedures: If the study is blinded, the circumstances in which unblinding may be\ndone and the mechanism to be used for unblinding should be given.",
+          "Sec 23": "23. Specimen of labels, cartons, etc. with Batch coding information like batch number, date\n\nof manufacture, date of expiry, as applicable, stamped thereon, and inserts used in the finished\npackings.",
+          "Sec 24": "24. For Hypodermic tablets and ophthalmic preparations, which are required to be manufactured\n\nunder aseptic conditions, records shall be maintained indicating the precautions taken during the process\nof manufacture to ensure that aseptic conditions are maintained.\nB. PARENTERAL PREPARATIONS.",
+          "Sec 26": "26. Countersignature of head of the testing unit or person in charge of testing for having\n\nverified the documents and for having released the product for sale and distribution, the\nquantity released and date of release.",
+          "Sec 28B": "28B. Penalty for manufacture, etc., of drugs or cosmetics in contravention of section 26A.—Whoever\n\nhimself or by any other person on his behalf manufactures or sells or distributes any drug or cosmetic in\ncontravention of the provisions of any notification issued under section 26A, shall be punishable with\nimprisonment for a term which may extend to three years and shall also be liable to fine which may extend to\nfive thousand rupees.]",
+          "Sec 29": "29. Records of reprocessing if any and particulars of reprocessing.\n\nII. RECORDS OF RAW MATERIALS\nRecords in respect of each raw material shall be maintained indicating the date of receipt,\ninvoice number, name and address of the manufacturer/supplier, batch number, quantity received, pack\nsize, date of manufacture, date of expiry, if any, date of analysis and release/rejection by quality\ncontrol, analytical report number with special remarks, if any, quantity issued, date of issue and the\nparticulars of the name and batch numbers of products for the manufacture of which issued and the\nproper disposal of the stocks.\nIII. PARTICULARS TO BE RECORDED IN THE ANALYTICAL RECORDS\nA. TABLETS AND CAPSULES.",
+          "Sec 31": "31. .\n\nDhoopans-Inhalers\n2 years",
+          "Sec 33": "33. Import of drugs for examination, test or analysis Small quantities of drugs\n\nthe import of which is otherwise prohibited under section 10 of the Act may be\nimported for the purpose of examination, test or analysis subject to the following\nconditions:\n(a) No drug shall be imported for such purpose except under a licence in\nForm 11;\n(b)\nthe licensee shall use the substances imported under the licence\nexclusively for purposes of examination, test or analysis and shall carry on such\nexamination, test or analysis in the place specified in the licence, or in such other\nplaces as the licensing authority may from time to time authorise;\n(c) the licensee shall allow any Inspector authorized by the licensing authority\nin this behalf to enter, with or without prior notice, the premises where the substances\nare kept, and to inspect the premises, and investigate the manner in which the\nsubstances are being used and to take samples thereof;\n(d) the licensee shall keep a record of, and shall report to the licensing\nauthority, the substances imported under the licence, together with the quantities\nimported, the date of importation and the name of the manufacturer;\n(e) the licensee shall comply with such further requirements, if any, applicable\nto the holders of licences for examination, test or analysis as may be specified in\nany rules subsequently made under Chapter III of the Act and of which the\nlicensing authority has given to him not less than one month‘s notice.",
+          "Sec 33C": "33C. [Ayurvedic, Siddha and Unani Drugs Technical Advisory Board].—(1) The Central\n\nGovernment shall, by notification in the Official Gazette and with effect from such date as may be specified\n15\ntherein, constitute a Board (to be called the [Ayurvedic, Siddha and Unani Drugs Technical Advisory\nBoard]) to advise the Central Government and the State Governments on technical matters arising out of\nthis Chapter and to carry out the other functions assigned to it by this Chapter.\n(2) The Board shall consist of the following members, namely:—",
+          "Sec 33F": "33F. Government Analysts.—(1) The Central Government or a State Government may, by notification in the\n\nOfficial Gazette, appoint such persons as it thinks fit, having the prescribed qualifications, to be Government Analysts for\nsuch areas as may be assigned to them by the Central Government or the State Government, as the case may be.\n(2) Notwithstanding anything contained in sub-section (1), neither the Central Government nor a State Government\nshall appoint as a Government Analyst any official not serving under it without the previous consent of the Government\nunder which he is serving.\n1\n[(3) No person who has any financial interest in the manufacture or sale of any drug shall be appointed to be a\nGovernment Analyst under this section.]",
+          "Sec 33G": "33G. Inspectors.—(1) The Central Government or a State Government may, by notification in the Official Gazette,\n\nappoint such persons as it thinks fit, having the prescribed qualifications, to be Inspectors for such areas as may be\nassigned to them by the Central Government or the State Government, as the case may be.\n(2) The powers which may be exercised by an Inspector and the duties which may be performed by him and the\nconditions, limitations or restrictions subject to which such powers and duties may be exercised or performed shall be\nsuch as may be prescribed.\n(3) No person who has any financial interest in the manufacture or sale of any drug shall be appointed to be an\nInspector under this section.\n(4) Every Inspector shall be deemed to be a public servant within the meaning of section 21 of the Indian Penal Code\n(45 of 1860) and shall be officially subordinate to such authority as the Government appointing him may specify in this\nbehalf.",
+          "Sec 33H": "33H. Application of provisions of sections 22, 23, 24 and 25.—The provisions of sections 22, 23, 24 and 25 and\n\nthe rules, if any, made thereunder shall, so far as may be, apply in relation to an Inspector and a Government Analyst\nappointed under this Chapter as they apply in relation to an Inspector and a Government Analyst appointed under\nChapter IV, subject to the modification that the references to ―drug‖ in the said section, shall be construed as references\nto 2[―Ayurvedic, Siddha or Unani] drugs‖.\n3\n[33-I. Penalty for manufacture, sale, etc., of Ayurvedic, Siddha or Unani drug in contravention of this\nChapter —Whoever himself or by any other person on his behalf—\n(1) manufactures for sale or for distribution,—",
+          "Sec 33K": "33K. Confiscation.—Where any person has been convicted under this Chapter, the stock of the\n\n1[Ayurvedic, Siddha or Unani] drug, in respect of which the contravention has been made, shall be liable to\nconfiscation.\n[33-KA. Disclosure of name of manufacturer etc., –Every person, not being the manufacturer of any\nAyurvedic, Siddha or Unani drug or his agent for the distribution thereof, shall, if so required, disclose to the\nInspector the name, address and other particulars of the person from whom he acquired the Ayurvedic, Siddha\nor Unani drug.]\n6\n6\n[33-KB. Maintenance of records and furnishing of information.— Every person holding a licence under\nclause (c) of section 33-EEC shall keep and maintain such records, registers and other documents as may be\nprescribed and shall furnish to any officer or authority exercising any power or discharging any function under\nthis Act such information as is required by such officer or authority for carrying out the purposes of this Act. ]",
+          "Sec 33L": "33L. Application of provisions to Government departments.—The provisions of this Chapter except\n\nthose contained in section 33K shall apply in relation to the manufacture for sale, sale or distribution of\n1\nany [Ayurvedic, Siddha or Unani] drug by any department of Government as they apply in relation to the\nmanufacture for sale, sale or distribution of such drug by any other person.",
+          "Sec 33M": "33M. Cognizance of offences.—(1) No prosecution under this Chapter shall be instituted except by an\n\nInspector 2[with the previous sanction of the authority specified under sub-section (4) of section 33G].\n3\n(2) No Court inferior to that [of a Metropolitan Magistrate or of a Judicial Magistrate of the first class]\nshall try an offence punishable under this Chapter.\n4",
+          "Sec 33N": "33N. Power of Central Government to make rules.—(1) The Central Government may, [after\n\nconsultation with, or on the recommendation of, the Board] and after previous publication by notification in\nthe Official Gazette, make rules for the purpose of giving effect to the provisions of this Chapter:\nProvided that consultation with the Board may be dispensed with if the Central Government is of\nopinion that circumstances have arisen which render it necessary to make rules without such consultation, but\nin such a case, the Board shall be consulted within six months of the making of the rules and the Central\nGovernment shall take into consideration any suggestions which the Board may make in relation to the\namendment of the said rules.\n(2) Without prejudice to the generality of the foregoing power, such rules may—\n(a) provide for the establishment of laboratories for testing and analysing 1[Ayurvedic, Siddha or\nUnani] drugs;",
+          "Sec 34": "34. .\n\nTila\nLashooq\nGulqand\nFateela\nGhaza, Utban, Sasbhh\n(a) Plant based\n(b) Mineral based\n(c) Metal based\n(d) Animal based\n(e) Synthetic\n(f) Any other Ayurvedic, Siddha, Unani formulation",
+          "Sec 35": "35. Cancellation of licence for examination, test or analysis. (1) A licence for\n\nexamination, test or analysis may be cancelled by the licensing authority for breach of\nany of the conditions subject to which the licence was issued.\n(2) A licensee whose licence has been cancelled may appeal to the Central\nGovernment within three months of the date of the order.",
+          "Sec 36": "36. Import of drugs for personal use. Small quantities of drugs, the import of which\n\nis otherwise prohibited under section 10 of the Act, may be imported for personal use\nsubject to the following conditions:\n(i) the drugs shall form part of a passenger‘s bona fide baggage and shall be the\nproperty of, and be intended for, the exclusive personal use of the passenger;\n(ii) the drugs shall be declared to the Customs authorities if they so direct;\n(iii) the quantity of any single drug so imported shall not exceed one hundred\naverage doses :\nProvided that the licensing authority may in an exceptional case in any individual\ncase sanction the import of a larger quantity:\n2\n[Provided further that any drug, imported for personal use but not forming part of\nbona fide personal baggage, may be allowed to be imported subject to the following\nconditions, namely:\n(i) the licensing authority, on an application made to it in Form 12A is\nsatisfied that the drug is for bona fide personal use;\n(ii) the quantity to be imported is reasonable in the opinion of the licensing\nauthority and is covered by prescription from a registered medical practitioner ;\nand\n(iii) the licensing authority grants a permit in respect of the said drug in Form",
+          "Sec 37": "37. Protection of action taken in good faith.—No suit, prosecution or other legal proceeding shall lie against any\n\nperson for anything which is in good faith done or intended to be done under this Act.\n1\n[38. Rules to be laid before Parliament.— Every rule made under this Act shall be laid as soon as may be after\nit is made before each House of Parliament while it is in session for a total period of thirty days which may be comprised\nin one session or in two or more successive sessions, 2[and if, before the expiry of the session immediately following the\nsession or the successive sessions aforesaid], both Houses agree in making any modification in the rule or both Houses\nagree that the rule should not be made, the rule shall thereafter have effect only in such modified from or be of no effect,\nas the case may be; so however that any such modification or annulment shall be without prejudice to the validity of\nanything previously done under that rule.]",
+          "Sec 46": "46. .\n\n2\nColistin Sulphate\nD-Cycloserine\nDimethyl Chlortetracycline Hydrochloride\nDimethyl Chlortetracycline Hydrochloride Capsules\nDaunoblastin Injection.\nDoxycycline Hydrochloride\nDoxcycline Monohydrate\nDoxycyline Monohydrate for Oral Suspension.\nDoxycycline Monohydrate Capsules.\nErythromycin Estolate\nErythromycin Ethylsuccinate\nErythromycin Oral Suspension\nErythromycin Estolate for Oral Suspension\nErythromycin Ethyl Succinate Tablet\nErythromycin Estolate Tablets\nErythromycin Stearate\nFramycetin Sulphate\n3\n60\n48\n48\n36\n36\n48\n36\n24\n36\n36\n60\n36\n36\n24\n24\n36\n48",
+          "Sec 54": "54. .\n\nBenserazide hydrochloride\nAmantadine hydrochloride",
+          "Sec 22": "22. 5.2\n\n(a)\n(b)\n(c)\n(d)\n(e)\n(f)\n(g)\n(h)\n(i)",
+          "Rule 27A": "Provided that in case of emergencies the licensing authority may, with the\napproval of the Central Government, issue an import licence in Form 10 or 10A, as\nthe case may be, without the issuance of Registration Certificate under Rule 27A, for\nreasons to be recorded in writing.\n3\n[Provided further that Registration certificate shall not be required to be\naccompanied with an application for an import licence under the Rules for the import\nof in-vitro diagnostic kits and regents, except for the diagnostic kits notified from\ntime to time under sub-clause (iv) of clause (b) of section 3.]\n(3) A fee of two hundred and fifty rupees shall be paid for a duplicate copy of the\nlicence issued under this Rule, if the original is defaced, damaged or lost.]\n4\n[24A. Form and manner of application for Registration Certificate.—(1) An\napplication for issue of a Registration Certificate shall be made to the licensing\nauthority in Form 40, either by the manufacturer himself, having a valid wholesale\nlicence for sale or distribution of drugs under these rules, or by his authorised agent\nin India, either having a valid licence under the rules to manufacture for sale of a drug\nor having a valid wholesale licence for sale or distribution of drugs under these rules,\nand shall be accompanied by the fee specified in sub-rule (3) and the informations and\nundertakings specified in Schedules D-I and D-II duly signed by or on behalf of the\nmanufacturer.",
+          "Sec 27": "27. .\n\nNiacinamide Tablets\nD-Panthenol\n36\n60\nIn a well closed container, protected from\nlight, in a cool place.\nIn a well closed container, protected from\nlight, in a cool place.\nIn a well closed container, protected from\nlight, in a cool place.\nINSULIN PREPARATIONS",
+          "Sec 30": "30. Whole Human Blood collected and\n\ntransfused by Centres r un by Armed Forces\nMedical Services in border areas, small midzonal hospitals including peripheral hospitals,\nField Ambulances, Mobile medical units and\nother field medical units including blood\nsupply units in border, sensitive and field\nareas.\n(iii) The drug shall be purchased from a dealer\nor a manufacturer who holds licence under\nthese rules and records of such purchases\nshowing the names and quantities together\nwith their batch numbers and names and\naddresses of the manufacturers or dealers and\nthe names and addresses of the patients to\nwhom supplies have been made shall be\nmaintained. Such records shall be open to\ninspection by an inspector appointed under the\nAct, who may also take samples for test.\nAll the provisions of Chapter IV of the Act\nand rules made thereunder which require them\nto be covered by a licence to operate a Blood\nBank for collection, storage and processing of\nwhole human blood for sale or distribution\nsubject to the following conditions:(i) These Centres shall collect, process and\ntransfuse blood in emergent situations which\nrequire lifesaving emergency surgeries/or\ntransfusion.\n(ii) These Centres shall be under the active\ndirection and personal supervision of a\nqualified Medical Officer, possessing the\n416\nqualifications and experiences specified in\ncondition (i) of rule 122-G.\n(iii) Each blood unit shall be tested before use\nfor freedom from HIV I and II antibodies,\nHepatitis B surface antigen, malarial parasites\nand other tests specified under the monograph\n―Whole Human Blood‖ in current edition of\nIndian Pharmacopoeia\n(iv) These Centres shall have adequate\ninfrastructure facilities for storage and\ntransportation of blood.\n(v) The blood collected and tested by such\nCentres shall be transfused by the Centre itself\nand may be made available for use of other\nperipheral Armed Forces hospitals or Centres\nduring operational circumstances.]\n48\n[31. The following Homoeopathic\nMedicines, namely: 49\n[(a) ***\n(b) Homoeopathic Ointments, each 50[in 25gm.\nTube]:\n(i)\nArnica Montana\n(ii)\nCalendula Officinalis\n(iii)\nCantharis\n(iv)\nRhus Toxicodendron\n(c) Biochemic tissue remedies in tablet forms,\nin generic names only, each in 20gm. Packing\nin 3X and 6X trituration(i) Calcarea Phosphorica\n(ii) Calcarea Sulphurica\n(iii) Ferum Phosphoricum\n(iv) Kali Muriaticum\n(v) Kali Phosphoricum\n(vi) Kali Sulphuricum\n(vii) Magnesium Phophoricum\n(viii) Magnesia Sulphurica\n(ix) Natrum Muriaticum\n(x) Natrum Phophoricum\n(xi) Natrum Sulphuricum\n(xii) Silica\nThe provisions of Chapter IV of the Act and\nthe rules made thereunder which require them\nto be covered with a sale licence in Form 20C, subject to the following conditions: (i) These homoeopathic medicines shall be\nsold in the original sealed small quantity\npackings of the licensed manufacturers.\n(ii) These medicines may be stocked and sold\nby retail of medicines licensed under rule 61.\n(iii) These medicines shall be stored separately\nfrom other allopathic drugs.\n(iv) These medicines shall be purchased from\na manufacturer or a dealer licensed under these\nrules.\n(v) The purchase and sale records of these\nmedicines shall be maintained by the dealer\nfor minimum period of three years.\n(vi) These medicines shall be labelled in\ngeneric / pharmacopoeial names only.\n(d)\nHomoeopathic medicines, mentioned\nbelow, in pills, each in 30C potency, in sealed\noriginal packing of manufacturer of 8 gms:\n(i) Arnica Montana\n(ii) Aconitum Napellus\n(iii) Arsenicum Album\n417\n(iv) Aloe Socotrina\n(v) Apis Mellifica\n(vi) Allium Cepa\n(vii) Bryonia Alba\n(viii) Borax\n(ix) Belladonna\n(x) Cantharis\n(xi) Carbo Vegatabilis\n(xii) Cina\n(xiii) Colocythis\n(xiv) Calendula Officinalis\n(xv) Caulophyllum Thalictroides\n(xvi) Cocculus Indicus\n(xvii) Chamomilla\n(xviii) Drosera Rotundifolia\n(xix) Hypeicum Perforatum\n(xx) Hepar Sulphur\n(xxi) Ipecacuanha\n(xxii) Ledum Palustre\n(xxiii) Millefolium\n(xxiv) Mercurius Solubilis\n(xxv) Nux Vomica\n(xxvi) Pulsatilla Nigricans\n(xxvii) Podophyllum Peltatum\n(xxviii) Plantago Major\n(xxix) Rhus Toxicodendron\n(xxx) Ruta Graveolens\n(xxxi) Symphytum Officinalis\n(xxxii) Veratrum Album\n51\n[(e) All biochemic and its combinations (1\nto 28), in tablet forms, in sealed original\npacking of the manufacture.]\n52\n[32. First Aid kit supplied along with motor\nvehicle by the manufacturer or its distributors\nat the time of first sale of vehicle.\n53\n[33. Nicotine gum 54[and Lozenges]\ncontaining upto 2 mg of nicotine\n55\n[34. Production of Oxygen 93 per cent USP,\nproduced from air by the molecular sieve\nprocess, by a hospital or Medical Institute for\ntheir captive consumption.\nThe provisions of Chapter IV of the Act and\nrules made thereunder which require them to\nbe covered by a sale licence, subject to the\ncondition that the drug items are procured\nfrom a manufacturer or a dealer licensed under\nthe rules.]\nThe provisions of Chapter IV of the Act and\nthe Rules made thereunder which require them\nto be covered by a sale license subject to the\ncondition that such a product has been\nmanufactured\nunder\na\nvalid\ndrug\nmanufacturing license.]\nThe provisions of Chapter IV of the Act and\nthe Rules made thereunder which require them\nto be covered by manufacturing licence under\nthe rules, provided that the production\nfacilities shall be open to inspection by an\nInspector appointed under the Act, who can, if\nnecessary, take samples For test‖.]\n418\n56\n[35. Homoeopathic hair oils having active\ningredients up to 3X potency only\n58\n[36. Custom made devices\nThe provisions of Chapter IV of the Act and\nthe rules made thereunder which require them\nto be covered with a sale licence 57[***]\nsubject to the condition that such a product has\nbeen\nmanufactured\nunder\na\nvalid\nmanufacturing licence and sold in the original\nsealed packing of the licensed manufacturers.]\nAll provisions of Chapter IV of the Act and\nthe rules made thereunder, subject to the\ncondition that the device being specifically\nmade in accordance with a duly qualified\nmedical practitioner‘s written prescription\nunder his responsibility, in accordance with\nspecific design characteristics and is intended\nfor the sole use of a particular patient and the\nlabel should bear the word ―custom made\ndevice.‖\nExplanation.–– Mass produced devices\nwhich only need adoption to meet the specific\nrequirements of the medical practitioner or any\nother professional user shall not be considered\nto be custom made devices.]",
+          "Sec 12B": "12B. ]\n\n3\n[37. Packing of patent or proprietary medicine. —Patent or proprietary\nmedicines shall be imported in containers intended for retail sale:\n4\n[Provided that such medicines may be imported in bulk containers by any\nperson who holds a licence to manufacture, if such person has obtained permission in\nwriting to import such medicines from the licensing authority at least three months prior\nto the date of import and the imports are made within a period of twelve months from\nthe date of issue of such permission].]",
+          "Sec 39": "39. .\n\nArticaine hydrochloride\nAcamprosate calcium",
+          "Sec 43": "43. The drugs specified in Schedule D shall be exempt from the provisions of\n\nChapter III of the Act and of the Rules made thereunder to the extent, and subject to\nthe conditions specified in that Schedule.\n1\n[43A. No drug shall be imported into India except through one of the following\nplaces, namely:\nFreozepore Cantonment and Amritsar Railway Stations:\nIn respect of drugs imported by rail across the frontier with Pakistan.\nRanaghat, Bongaon and Mohiassan Railways Stations:\nIn respect of drugs imported by rail across the frontier with Bangladesh.\n5\n[Petrapole Road in West Bengal, Sutarkandi in Assam, Old Raghna Bazar and Agartala in\nTripura :\nIn respect of drugs imported by Road from Bangladesh;]\n2\n[Raxaul:\nIn respect of drugs imported by road and railway lines connecting Raxaul in India\nand Birganj in Nepal;]\n4\n[Chennai, Kolkata, Mumbai, Cochin, Nhava Sheva, Kandla and Inland Container\nDepots at Tuglakabad and Patparganj in Delhi and Tuticorin in Tamil Nadu and\nMarmugao port in Goa and Visakhapatnam in Andhra Pradesh:\nIn respect of drugs imported by sea into India;\nChennai, Kolkata, Mumbai, Delhi,Ahmedabad, Hyderabad, Goa, Bengaluru and\nVisakhapatnam:\nin respect of drugs imported by air into India.]\n4\n[43-B. Drugs, consignments of which are in transit through India to foreign\ncountries and which shall not be sold or distributed in India shall be exempted from\nthe requirements of Chapter III of the Drugs and Cosmetics Act, 1940 (23 of 1940)\nand the Rules made thereunder:\nProvided that if the Government of the countries to which the drugs are consigned\nregulate their import by the grant of import licences, the importer shall at the time of\nimport into India, produce such import licences.]",
+          "Sec 45": "45. Duties of Government Analysts.−(1) The Government Analyst shall cause to\n\nbe analysed or tested such samples or drugs 1[and cosmetics] as may be sent to\nhim by Inspectors or other persons under the provisions of Chapter IV of the Act and\nshall furnish reports of the results of test or analysis in accordance with these Rules.\n(2) A Government Analyst shall from time to time forward to the Government\nreports giving the result of analytical work and research with a view to their\npublication at the discretion of Government.",
+          "Sec 47": "47. .\n\nFramycetin Sulphate Eye drops\n24",
+          "Sec 48": "48. .\n\nFramycetin Sulphate Ointment\n24\nIn a well closed container\nwith temperature not\nexceeding 30°C",
+          "Sec 51": "51. .\n\nParkinsonism\nPiles and Fistulae\nPower to rejuvinate\nPremature ageing\nPremature greying of hair\nRheumatic Heart Diseases\nSexual Impotence, Premature ejaculation and spermatorrhoea\nSpondylitis\nStammering\nStones in gall-bladder, kidney, bladder\nVericose Vein.]",
+          "Sec 52": "52. .\n\nGentamycin Sulphate\nGentamycin Sulphate Injection\nGramicidin\nGriseofulvin\n60\n36\n60\n48\nIn a cool place.",
+          "Sec 53": "53. .\n\nGriseofulvin Tablets\n36",
+          "Sec 56": "56. .\n\nBethanidine sulphate\nAmikacin sulphate",
+          "Sec 57": "57. .\n\nBezafibrate\nAmiloride hydrochloride",
+          "Sec 59": "59. .\n\nBiclotymol monohydrate /lactate\nAminoglutethimide",
+          "Sec 62": "62. .\n\nBiperiden hydrochloride\nAmitriptyline",
+          "Sec 65": "65. Condition of licences. Licences in 2[Forms 20, 20-A, 20-B, 20-F, 20-G, 21\n\nand 21-B] shall be subject to the conditions stated therein and to the following general\nconditions\n2\n[(1) Any drug shall, if compounded or made on the licensee‘s premises be\ncompounded or made by or under the direct and personal supervision of a 3[registered\nPharmacist].]\n(2) The supply, otherwise than by way of wholesale dealing, 4[* * *] of any drug\nsupplied on the prescription of a Registered Medical Practitioner shall be effected\nonly by or under the personal supervision of a 3[registered Pharmacist].\n5\n[(3) (1) The supply of any drug 6[other than those specified in Schedule X] on a\nprescription of a Registered Medical Practitioner shall be recorded at the time of\nsupply in a prescription register specially maintained for the purpose and the serial\nnumber of the entry in the register shall be entered on the prescription. The following\nparticulars shall be entered in the register:_\n(a) serial number of the entry,\n(b) the date of supply,\n(c) the name and address of the prescriber,\n7\n[(d) the name and address of the patient, or the name and address of the\nowner of the animal if the drug supplied is for veterinary use,\n(e) the name of the drug or preparation and the quantity or in the case of a\nmedicine made up by the licensee, the ingredients and quantities thereof,\n(f) in the case of a drug specified in 2[Schedule C or 8[Schedule H and\nSchedule H1]] the name of the manufacturer of the drug, its batch number and\nthe date of expiry of potency, if any,\n(g) the signature of the 3[registered Pharmacist] by or under whose\nsupervision the medicine was made up or supplied:",
+          "Sec 66": "66. .\n\nPrimonidine tartrate\nAmrinonelactate",
+          "Sec 67A": "67A. (1) The State Government shall appoint Licensing Authorities for the\n\npurpose of this Part for such areas as may be specified.\n(2) Application for the grant or renewal of a licence 2[to sell, stock or exhibit or\noffer for sale or distribute] Homoeopathic medicines shall be made in Form 19-B to\nthe Licensing Authority and shall be accompanied by a 3[fee of rupees two hundred\nand fifty]:\n4\n[Provided that if the applicant applies for renewal of licence after its expiry but\nwithin six months of such expiry the fee payable for renewal of such licence shall be\n3\n[rupees two hundred and fifty plus an additional fee at the rate of rupees fifty or part\nthereof].\n5\n[(3) If the original licence is either defaced, damaged or lost, a duplicate copy\nthereof may be issued on payment of a 3[fee of rupees fifty].]",
+          "Sec 67B": "67B. A Licensing Authority may, with the approval of the State Government, by\n\nan order in writing, delegate the power to sign licences and such other powers, as may\nbe specified, to any other person under his control.",
+          "Sec 67C": "67C. Forms of licences to sell drugs. (1) A licence 2[to sell, stock or exhibit or\n\noffer for sale or distribute] Homoeopathic medicines by retail or by wholesale shall\nbe issued in Form 20C or 20D as the case may be.",
+          "Sec 67D": "67D. Sale at more than one place. If drugs are sold or stocked for sale at more\n\nthan one place, a separate application shall be made and a separate licence shall be\nobtained in respect of each place.",
+          "Sec 67E": "67E. Duration of licences. An original licence or a renewed licence unless it is\n\nsooner suspended or cancelled shall be 1[valid for a period of five years on and from\nthe date on which] it is granted or renewed :\n2\n[Provided that if the application for renewal of a licence in force is made before\nits expiry or if the application is made within six month of its expiry, after payment of\nadditional fee, the licence shall continue to be in force until orders are passed on the\napplication and the licence shall be deemed to have expired if application for its\nrenewal is not made within six months after its expiry.]\n3\n[67EE. Certificate of renewal. The certificate of renewal of a sale licence in\nForms 20C and 20D shall be issued in Form 20E.]",
+          "Sec 67F": "67F. Condition to be satisfied before a licence in Form 20C or Form 20D is\n\ngranted.-(1) A licence in Form 20C or Form 20D to 4[to sell, stock or exhibit or\noffer for sale or distribute] Homoeopathic medicines shall not be granted to any\nperson unless the authority empowered to grant the licence is satisfied that the\npremises in respect of which the licence is to be granted are clean and in the case of a\nlicence in Form 20C the sale premises is in charge of a person who is or has been\ndealing in Homoeopathic medicines and who is in the opinion of the Licensing\nAuthority competent to deal in Homoeopathic medicines:\n5\n[Provided that no registered Homoeopathic medical practitioner who is\npractising Homoeopathy in the premises where Homoeopathic medicines are sold\nshall deal in Homoeopathic medicines.]\n(2) Any person who is aggrieved by the order passed by the Licensing Authority\nunder sub-rule (1) may within 30 days from the date of the receipt of such order\nappeal to the State Government and the State Government may, after such enquiry\ninto the matter as it considers necessary and after giving the appellant an opportunity\nfor representing his case, make such order in relation thereto as it thinks fit.",
+          "Sec 67G": "67G. Conditions of licence. Licence in Form 20C or 20D shall be subject to\n\nthe conditions stated therein and to the following further conditions, namely:\n(1) The premises where the Homoeopathic medicines are stocked for sale or\nsold are maintained in a clean condition.\n(2) The sale of Homoeopathic medicines shall be conducted under the\nsupervision of a person, competent to deal in Homoeopathic medicines.\n(3) The licensee shall permit an Inspector to inspect the premises and\nfurnish such information as he may require for ascertaining whether the\nprovisions of the Act and the Rules made thereunder have been observed.\n(4) The licensee in Form 20D shall maintain records of purchase and sale\nof Homoeopathic medicines containing alcohol together with names and\naddresses of parties to whom sold.\n1\n[(5) The licensee in Form 20C shall maintain records of purchase and sale\nof Homoeopathic medicines containing alcohol. No records of sale in respect\nof Homoeopathic potentised preparation in containers of 30 ml. or lower\ncapacity and in respect of mother tinctures made up in quantities up to 60 ml.\nneed be maintained.]\n2\n[(6) The licensee shall maintain an Inspection Book in Form 35 to enable\nan Inspector to record his impressions and the defects noticed.]\n3\n[67GG. Additional information to be furnished by an applicant for licence or a\nlicensee to the Licensing Authority. The applicant for the grant of a licence or any\nperson granted a licence under this Part shall, on demand furnish to the Licensing\nAuthority, before the grant of the licence or during the period the licence is in force\nas the case may be, documentary evidence in respect of the ownership or occupation\nor rental or other basis of the premises, specified in the application for licence or in\nthe licence granted, constitution of the firm, or any other relevant matter, which\nmay be required for the purpose of verifying the correctness of the statements made\nby the applicant or the licensee, while applying for or after obtaining the licence, as\nthe case may be.]",
+          "Sec 68": "68. .\n\nProcaine Penicillin G\n36\n533\n4\nProtected from light\nIn a cool place\nIn a cool place\nIn a cool place\nIn a cool place\nIn a cool place\nIn a cool place\nIn a well closed container\nwith temperature not\nexceeding 30°C\nIn a well closed container\nwith temperature not\nexceeding 30°C\nIn a cool place\nIn a cool place\nIn a cool place\nIn a cool place\nIn a cool place\nAt temperature not exceeding\n5°C\nIn a cool place\nIn a cool place\nIn a cool place\nIn a cool place\nIn a cool place\nIn a cool place\n1\n2",
+          "Sec 74A": "74A. Conditions for licence in Form 25B._ A licence in Form 25B shall be\n\nsubject to the conditions stated therein and to the following conditions:_\n(a) the repacking of drugs shall at all times be conducted under the personal\nsupervision of at least one person who is approved as a competent person by\nthe Licensing Authority;\n(b) the licensee shall either provide and maintain adequate arrangements in\nhis own premises for carrying out tests of the strength, quality and purity of the\ndrugs repacked or make arrangements with some institution approved by the\nLicensing Authority 3[under Part XV (A) of these rules] for such tests to be\nregularly carried out on his behalf by the institution;\n(c) the licensee shall make adequate arrangements for the storage of drugs;\n2\n[(d) the licensee shall comply with the provisions of the Act and of these\nrules and with such further requirements, if any, as may be specified in any\nrules subsequently made under Chapter IV of the Act:\nProvided that where such further requirements are specified in the Rules,\nthese would come into force four months after publication in the Official\nGazette.]\n(e) the licensee shall allow any 4 [Inspector appointed under the Act] to\nenter with or without notice, any premises where the packing of drugs in\nrespect of which the licence is issued is carried on, to inspect the premises and\nto take samples of repacked drugs;\n2\n[(f) the licensee shall, either in his own laboratory or, in any other laboratory\napproved by the Licensing Authority, test each batch or lot of raw material\nused by him for repacking and also each batch of the product thus repacked\nand shall maintain records or registers showing the particulars in respect of\nsuch tests as specified in Schedule U. The records or registers shall be\nretained for a period of five years from the date of repacking. The licensee\nshall allow the Inspector to inspect all registers and records maintained under\nthese rules and shall supply to the Inspector such information as he may require\nfor the purpose of ascertaining whether the provisions of the Act and these\nrules have been observed;]",
+          "Sec 81": "81. Procedure of Licensing Authority.−(1) If the Licensing Authority 5[or\n\nCentral Licence Approving Authority, as the case may be,] after such further enquiry,\nif any, as he may consider necessary, is satisfied that the requirements of the Rules\nunder the Act have been complied with and that the conditions of the licence and the\nRules under the Act will be observed, he 2[shall issue a licence under this Part].\n(2) If the Licensing Authority 5[or Central Licence Approving Authority, as the\ncase may be,] is not so satisfied, he shall reject the application and shall inform the\napplicant of the reasons for such rejection and of the conditions which must be\nsatisfied before a licence can be granted and shall supply the applicant with a copy of\nthe inspection report.\n3\n[82. Further application after rejection. −If within a period of six months from\nthe rejection of an application for a licence the applicant informs the Licensing\nAuthority 5[or Central Licence Approving Authority, as the case may be,] that the\nconditions laid down have been satisfied and deposits an inspection 4[fee of rupees\ntwo hundred and fifty] the Licensing Authority 5[or Central Licence Approving\nAuthority, as the case may be,] may, if after causing a further inspection to be made,\nhe is satisfied that the conditions for the grant of a licence have been complied with,\n5\n[in respect of drugs notified under Rule 68-A] issue a licence in Form 28 2[or Form\n28-B].",
+          "Sec 83": "83. Renewal.−On application being made for renewal, the licensing authority\n\nmay cause an inspection to be made and, if satisfied that the condition of the licence\nand the Rules under the Act are, and will continue to be observed, 1[he shall prepare a\nreport to that effect in respect of those drugs which have been notified by the Central\nGovernment under Rule 68-A and forward it along with the application to the Central\nLicence Approving Authority], and shall issue a certificate of renewal 3[under this\nPart].\n3\n[83-A. Certificate of renewal of a loan licence.−The certificate of renewal of a\nloan licence in 8[Form 28A or Form 28DA] shall be issued in Form 26A or Form 26J\nrespectively.]\n4\n[83-AA. Duration of loan licence.−An original loan licence in 8[Form 28A or\nForm 28DA] or a renewed loan licence in 8 [ Form 26A or Form J], unless sooner\nsuspended or cancelled, shall be 5[valid for a period of five years on and from the\ndate on which] it is granted or renewed:\n6\n[Provided that if the application for the renewal of a licence is made before its\nexpiry, or if the application is made within six months of its expiry, after payment of\nthe additional fee, the licence shall continue to be in force until orders are passed on\nthe application and the licence shall be deemed to have expired if the application for\nits renewal is not made within six months of its expiry].]",
+          "Sec 84": "84. The provisions of this Part shall apply to the manufacture of drugs for sale\n\nnotwithstanding that such drugs are manufactured for sale outside India.\n7 6\n[ [84-A. Provision for appeal to the State Government or Central Government\nby party whose licence has not been granted or renewed.−\nAny person who is aggrieved by the order passed by the Licensing Authority or the\nCentral Licence Approving Authority, as the case may be, refusing to 2[grant or renew\na licence under this Part], may within thirty days from the date of receipt of such\norder, appeal to the State Government or Central Government, as the case may\nbe, and the State Government or the Central Government may, after such enquiry\ninto the matter,] as is considered necessary and after giving the said person an\nopportunity for representing his views, may pass such order in relation thereto as it\nthinks fit.]",
+          "Sec 85A": "85A. Manufacture on more than one set of premises. If Homoeopathic\n\nmedicines are manufactured in more than one set of premises a separate application\nshall be made and a separate licence shall be obtained in respect of each such set of\npremises.",
+          "Sec 85B": "85B. Application for licence to manufacture Homoeopathic medicines. (1)\n\nApplication for grant or renewal of 2[licence to manufacture for sale or for\ndistribution] of Homoeopathic medicines shall be made to the Licensing Authority\nappointed by the State Government for the purpose of this Part (hereinafter in this\nPart referred to as the Licensing Authority) and shall be made in Form 24-C.\n3\n[(2) The application in Form 24-C shall be accompanied–\n(a) by a fee of\n4\n[rupees two hundred] for the manufacture of\nHomoeopathic mother tinctures and potentised preparations and an inspection\nfee of 4[rupees one hundred] for the first inspection or 4[rupees fifty] in case of\ninspection for renewal of licence;\n(b) by a fee of 4[rupees two hundred] for the manufacture of Homoeopathic\npotentised preparations only, and an inspection fee of 4[rupees one hundred] for\nthe first inspection or 4[rupees fifty] in case of inspection for renewal of\nlicence;\n(c) by a fee of 4[rupees two hundred] for the manufacture of potentised\npreparations from back potencies by pharmacies which are already licensed to\nsell Homoeopathic medicines by retail and an inspection fee of 4[rupees one\nhundred] for the first inspection or 4[rupees fifty] in case of inspection for\nrenewal of licence.",
+          "Sec 85C": "85C. Application to manufacture ‗New Homoeopathic medicines.‘\n\nthe other provisions of these Rules\nSubject to\n(1) no ‗New Homoeopathic medicine‘ shall be manufactured unless it is\npreviously approved by the Licensing Authority mentioned in Rule 21;\n(2) the manufacturer of ‗New Homoeopathic medicine‘, when applying\nto the Licensing Authority mentioned in sub-rule (1) shall produce such\ndocumentary and other evidence as may be required by the Licensing Authority\nfor assessing the therapeutic efficacy of the medicine including the minimum\nprovings carried out with it.",
+          "Sec 85E": "85E. Conditions for the grant or renewal of a licence in Form 25C−Before a\n\nlicence in Form 25C is granted or renewed the following conditions shall be complied\nwith by the applicant:—\n(1) The manufacture of Homoeopathic medicines shall be conducted under the\ndirection and supervision of competent technical staff consisting at least of one\nperson who is a whole time employee 2[and who is—\n(a) a graduate in Science with Chemistry as one of the subjects with three\nyears‘ experience in manufacture of Homoeopathic Medicines; or\n(b) a graduate in Pharmacy with 18 months of experience in the manufacture\nof Homoeopathic medicines; or\n(c) holds qualification as defined under sub-clause (g) of clause (1) of\nsection 2 of Homoeopathy Central Council Act, 1973 (59 of 1973) with 18\nmonths of experience in the manufacture of Homoeopathic medicines:\nProvided that the persons who are already in employment with five years‘\nexperience in the manufacture of Homoeopathic medicines and whose name\nwas accordingly entered in any licence granted in Form 25C for manufacture of\ndifferent classes of Homoeopathic medicines included in them shall be deemed\nto be qualified for the purpose of this rule.]\n3\n[(2) The factory premises shall comply with the requirements and\nconditions specified in Schedule M-I:",
+          "Sec 85F": "85F. Duration of licence.–An original licence or a renewed licence unless it is\n\nsooner suspended or cancelled shall be 1[valid for a period of five years on and from\nthe date on which] it is granted or renewed:\n2\n[Provided that if the application for renewal of a licence in force is made before\nits expiry or if the application is made within six months of its expiry, after payment\nof additional fee, the licence shall continue to be in force until orders are passed on\nthe application and the licence shall be deemed to have expired if application for its\nrenewal is not made within six months of its expiry.]",
+          "Sec 85G": "85G. Certificate of renewal.–The certificate of renewal of a licence in Form 25-C\n\nshall be issued in Form 26-C.",
+          "Sec 85H": "85H. Conditions of licence.–A licence in Form 25-C shall be subject to the\n\nconditions stated therein and to the following further conditions, namely :\n(a) the licensee shall provide and maintain staff and premises as specified in\nRule 85-E;\n(b) the licensee shall allow an 1[Inspector appointed under the Act] to enter,\nwith or without prior notice, any premises where the manufacture of a\nHomoeopathic medicine in respect of which the licence is issued is carried on, to\ninspect the premises and to take samples of the manufactured Homoeopathic\nmedicines;\n(c) the licensee shall allow an Inspector to inspect all registers and records\nmaintained under these rules and shall supply to the Inspector such information\nas he may require for the purpose of ascertaining whether the provisions of the\nAct and the rules made thereunder have been observed;\n2\n[(d) the licensee shall maintain an Inspection Book in Form 35 to enable an\nInspector to record his impressions and defects noticed;]\n(e) the licensee shall comply with the following conditions in respect of\nmother tinctures manufactured by him_\n(i) the crude drug used in the manufacture of the mother tincture shall be\nidentified and records of such identification shall be kept 3[for a period of\nfive years];\n(ii) the total solids in the mother tincture shall be determined and\nrecords of such tests shall be kept 3[for a period of five years];\n(iii) the alcohol content in the mother tincture shall be determined and\nrecords of the same shall be maintained 3[for a period of five years];\n(iv) the containers of mother tinctures shall preferably be of glass and\nshall be clean and free from any sort of impurities or adhering matter. The\nglass shall be neutral as far as possible;\n(v) in the process of manufacture of mother tinctures hygienic\nconditions shall be scrupulously observed by the licensee. Storage and\nhandling conditions shall also be properly observed by the licensee according\nto Homoeopathic principles;",
+          "Sec 86": "86. Conditions relating to manufacture for examination, test or analysis.–The\n\nprovisions of Section 18 of the Act shall not apply to the manufacture of any drug in\nsmall quantities for the purpose of examination, test or analysis if the conditions\nprescribed in this Part are fulfilled.",
+          "Sec 87": "87. Labelling.–Any drug manufactured for the purpose of examination, test or\n\nanalysis shall be kept in containers bearing labels indicating the purpose for which it\nhas been manufactured.",
+          "Sec 88": "88. Labelling of drugs supplied to other persons.–If any drug manufactured for\n\nthe purpose of examination, test or analysis is supplied by the manufacturer to any\nother person, the container shall bear a label on which shall be stated the name and\naddress of the manufacturer, the accepted scientific name of the substance if known,\nor if not known a reference which will enable the substance to be identified and the\npurpose for which it has been manufactured.",
+          "Sec 89": "89. Licence.–If the person proposing to manufacture a drug for the purpose of\n\nexamination, test or analysis does not hold a licence in Form 25 or Form 28 in respect\nof such drugs he shall, before commencing such manufacture, obtain a licence in\nForm 29:\n1\n[Provided that in the case of a drug the composition of which is such that the drug\nis not generally recognized among experts qualified by scientific training and\nexperience to evaluate the safety of drugs as safe for use, no licence in Form 29 shall\nbe granted unless the applicant produces a certificate from the ―Licensing Authority‖\nmentioned in Rule 21, to the effect that there would be no objection to such licence\nbeing granted.",
+          "Sec 90": "90. Form of application.– 2[(1)] An application for a licence in Form 29 shall\n\nbe made to the Licensing Authority appointed by the State Government for the\npurpose of this Part (hereafter in this Part referred to as the Licensing Authority) in\nForm 30 and shall be made by or countersigned by the head of the institution in\nwhich, or a director of the firm or company by which, the substance will be\nmanufactured.\n4\n[(2) Every application in Form 29 shall be accompanied by a fee of 3[rupees two\nhundred fifty].",
+          "Sec 91": "91. Duration of licence.–A licence in Form 29 shall, unless sooner cancelled, be\n\nin force for a period of one year from the date of issue, and may thereafter be renewed\nfor periods of one year at a time.",
+          "Sec 92": "92. Conditions of licence. −A licence in Form 29 shall be subject to the following\n\nconditions\n(a) the licensee shall use the drugs manufactured under the licence\nexclusively for purpose of examination, test or analysis, and shall carry on the\nmanufacture and examination, test or analysis at the place specified in the\nlicence;\n(b) the licensee shall allow any 3[inspector appointed under the Act]\nto enter, with or without notice, the premises where the drugs are manufactured\nand to satisfy himself that only examination, test or analysis work is being\nconducted;\n(c) the licensee shall keep a record of the quantity of drugs manufactured\nfor examination, test or analysis and of any person or persons to whom the\ndrugs have been supplied;\n(d) the licensee shall comply with such further requirements, if any,\napplicable to the holders of licences in Form 29 as may be specified in any\nrules subsequently made under the Act and of which the Licensing Authority\nhas given him not less than one month‘s notice;\n(e) the licensee shall maintain an Inspection Book to enable an Inspector to\nrecord his impressions and defects noticed.",
+          "Sec 93": "93. Cancellation of licences.(1) The Licensing Authority may after giving the licensee an opportunity to show\n\ncause why such an order should not be passed, by an order in writing stating the\nreasons therefor, cancel a licence issued under this Part, either wholly or in respect of\nsome of the substances to which it relates, if, in his opinion, the licensee has failed to\ncomply with any of the conditions of the licence or with any provision of the Act or\nRules thereunder",
+          "Sec 94": "94. Exemption of certain drugs from certain provisions of this Part.— (1) Labels\n\non packages or containers of drugs for export shall be adapted to meet the specific\nrequirements of the law of the country to which the drug is to be exported but the\nfollowing particulars shall appear in a conspicuous position on the innermost\ncontainer in which the drug is packed and every other covering in which that\ncontainer is packed:\n(a) name of the drug;\n(b) the name, address of the manufacturer and the number of the licence under\nwhich the drug has been manufactured;\n(c) batch or lot number;\n(d) date of expiry, if any:\n2\n[Provided that where a drug, not classified under Schedule F, Schedule F(1) and\nSchedule X, 5[or blood products defined under rule 122EA] is required by the\nconsignee to be not labelled with the name and address of the manufacturer, the labels\non packages or containers shall bear a code number as approved by the Licensing\nAuthority mentioned in Rule 21.]\n4\n[Provided further that where a drug classified as Narcotic Drug or Psychotropic\nSubstance is to be exported under a code number, the same may be permitted by the\nsaid licensing authority on the following conditions, namely:(i) Each consignment of export shall be accompanied with requisite import license from\nthe importing country;\n(ii) The applicant shall obtain a no objection certificate from the Drugs Controller, India for\nmanufacture of such formulations to be exported with code number against each export\norder along with certificate from the regulatory authority of the importing country\ncontrolling Narotic Drugs and Psychotropic Substances that they do not have any\nobjection for the import of the drug with code number;\n(iii) The State Licensing Authority shall issue the manufacturing license for these\nformulations on each export order on the basis of a No Objection Certificate from Drugs\nController, India;\n(iv) A no objection certificate shall be obtained from the drugs Controller, India for export\nof each consignment; and\n(v) A no objection certificate shall be obtained from the Narcotic Commissioner of India,\nGwalior for export of each consignment of the drug.]\n3\n[(2) The provisions of Rules 96 to 101 inclusive, shall not apply to a medicine\nmade up ready for treatment, whether after or without dilution, which is supplied on\nthe prescription of a registered practitioner provided that:\n(i) the medicine is labelled with the following particulars : –\n(a) the name and address of the supplier;\n(b) the name of the patient and the quantity of the medicine;\n(c) the number representing serial number of the entry in the prescription\nregister;",
+          "Sec 95": "95. Prohibition of sale or distribution unless labelled.—Subject to the other\n\nprovisions of these Rules, no person shall sell or distribute any drug (including a\npatent or proprietary medicine) unless it is labelled in accordance with these Rules.\n2\n[96. Manner of Labelling .— (1) Subject to the other provisions of these Rules,\nthe following particulars shall be either printed or written in indelible ink and shall\nappear in a conspicuous manner on the label of the innermost container of any drug\nand on every other covering in which the container is packed, namely :—\n(i) the name of the drug−\n3\n[(A) for this purpose, the proper name of the drug shall be printed or\nwritten in a more conspicuous manner than the trade name, if any, which\nshall be shown immediately after or under the proper name and shall be]—\n(a) for drugs included in the Schedule F or Schedule F (1), the name\ngiven therein;\n(b) for drugs included in the Indian Pharmacopoeia or the official\npharmacopoeias and official compendia of drug standards prescribed in\nRule 124, the name or synonym specified in the respective official\npharmacopoeias and official compendia of drug standards followed by\nthe letters ‗I.P., or, as the case may be, by the recognized abbreviations\nof the respective official pharmacopoeias and official compendia of drug\nstandards;\n(c) for drugs included in the National Formulary of India, the name\nor synonym specified therein followed by the letters ‗N.F.I.‘;\n(d) for other drugs, the international non-proprietary name, if any,\npublished by the World Health Organisation or where an international\nnon-proprietary name is not published, the name descriptive of the true\nnature or origin of the substance;\n4\n[* * * * *]\n(ii) A correct statement of the net content in terms of weight, measure,\nvolume, number of units of contents, number of units of activity, as the case may\nbe, and the weight, measure and volume shall be expressed in Metric system.",
+          "Sec 97": "97. Labelling of medicines.— 1[(1) The container of a medicine for internal use\n\nshall—\n(a) if it contains a substance specified in Schedule G, be labelled with the\nwords ―Caution: it is dangerous to take this preparation except under medical\nsupervision‖ – conspicuously printed and surrounded by a line within which\nthere shall be no other words;\n(b) if it contains a substance specified in Schedule H, be labelled with the\nsymbol Rx and conspicuously displayed on the left top corner of the label and\nbe also labelled with the following words:\n‗Schedule H drug- Warning: To be sold by retail on the prescription of a\nRegistered Medical Practitioner only‘,\n(c) if it contains a substance specified in Schedule H, and comes within\nthe purview of the 2[Narcotic Drugs and Psychotropic Substances Act, 1985\n(61 of 1985)] be labelled with the symbol NRx which shall be in red and\nconspicuously displayed on the left top corner of the label, and be also labelled\nwith the following words:\n‗Schedule H drug -Warning: To be sold by retail on the prescription of a\nRegistered Medical Practitioner only‘;\n(d) If it contains a substance specified in Schedule X, be labelled with the\nsymbol XRx which shall be in red conspicuously displayed on the left top\ncorner of the label and be also labelled with the following words : ‗Schedule X drug -Warning: To be sold by retail on the prescription of\na Registered Medical Practitioner only‘.\n4\n[(e) if it contains a drug substance specified in Schedule H1, the drug\nformulation shall be labeled with the symbol Rx which shall be in red conspicuously\ndisplsyed on the left top corner of the label, and shall also be labelled with the\nfollowing words in a box with a red border:\n“SCHEDULE H1 DRUG – WARNING.\n- It is dangerous to take this preparation except in accordance with the\nmedical advice.\n- Not to be sold by retail without the prescription of a Registered Medical\nPractitioner.]\n(2) The container of an embrocation, liniment, lotion, 3[ointment, antiseptic\ncream,] liquid antiseptic or other liquid medicine for external application shall be\nlabelled with the words:\n―FOR EXTERNAL USE ONLY‖.",
+          "Rule 21": "Provided that the requirement of submitting the results of local clinical trials may not be\nnecessary if the drug is of such nature that the 6[Licensing Authority in Rule 21] may, in\npublic interest, decide to grant such permission on the basis of data available from other\ncountries:\nProvided further that the submission of requirements relating to Animal Toxicology,\nReproduction studies, Teratogenic studies,\nPerinatal\nstudies,\nMutagenicity and\nCarnicogenicity may be modified or relaxed in case of new drugs approved and marketed for\nseveral years in other countries if he is satisfied that there is adequate published evidence\nregarding the safety of the drug, subject to the other provisions of these rules.\n2\n[* * * * *]\n3\n[122D. Permission to import or manufacture fixed dose combination.- (1) An\napplication for permission to import or manufacture fixed dose combination of two or more\ndrugs as defined in clause (c) of rule 122-E shall be made to the Licensing Authority as\ndefined in clause (b) of Rule 21 in Form 44, accompanied by a fee of fifteen thousand rupees\nand shall be accompanied by such information and data as is required in Appendix VI of\nSchedule Y.",
+          "Sec 20": "20. .\n\nVitamin E or E-Acetate\n60",
+          "Sec 28": "28. Henna Powder IS: 11142.]\n\n2\n[29.\nBathing Bars IS: 13498: 1997\n3[30.\nSindoor IS: 14649: 1999\n4\n[31.\nLiquid Foundation makeup IS 14318\n4[32.\nCold Wax Hair remover IS 15152\n4\n[33.\nFace pack IS 15153\n4\n[34.\nKajal IS 15154\n4\n[35.\nOxidation Hair Dyes (Emulson Type) IS 15205\n4[36.\nCream Bleach IS 15608",
+          "Sec 32": "32. .\n\nPravahi Kwatha (with preservatives)\n3 years\nNote 1. Item at Sr. No.4, 5, 19, 20, 22, 23 have very long shelf life and they became more\nefficacious with the passage of time and period of ten years shall be mandatory for keeping the\nrecords of such items.\nNote 2. Bhasmas at Sr. No. 23, start solidifying after five years and they need one or two\n‗Puta‘again before using in the dosage form.\n(ii) Shelf life or date of expiry for Siddha Medicines\nSl. No.\nName of the Group of Medicine",
+          "Sec 13": "13. Investigational Product Management\n\n(a) Give Investigational product description and packaging (stating all Ingredients and the\nformulation of the investigational drug and any placebos used in the study)\n(b) The precise dosing required during the study.\n(c) Method of packaging, labelling, and blinding of study substances.\n(d) Method of assigning treatments to Subjects and the Subject identification code numbering\nsystem.\n(e) Storage conditions for study substances.\n(f) Investigational product accountability: Describe instructions for the receipt, storage, dispensation,\nand return of the investigational products to ensure a complete accounting of all investigational\nproducts received, dispensed, and returned/destroyed.\n(g.) Describe policy and procedure for handling unused investigational products.",
+          "Sec 40": "40. .\n\nAIDS\nAngina Pectoris\nAppendicitis\nArteriosclerosis\nBaldness\nBlindness\nBronchial Asthma\nCancer and Benign tumour\nCataract\nChange in colour of the hair and growth of new hair.\nChange of foetal sex by drugs.\nCongenital malformations\nDeafness\nDiabetes\nDiseases and disorders of uterus.\nEpilepticfits and psychiatric disorders\nEncephalitis\nFairness of the skin\nForm, structure of breast\nGangrene\nGenetic disorders\nGlaucoma\nGoitre\nHernia\nHigh/low Blood Pressure\nHydrocele\nInsanity\nIncrease in brain capacity and improvement of memory.\nImprovement in height of children/adults.\nImprovement in size and shape of the sexual organ and in duration of sexual\nperformance\nImprovement in the strength of the natural teeth.\nImprovement in vision\nJaundice/Hepatitis/Liver disorders\nLeukaemia\nLeucoderma\nMaintenance or improvement of the capacity of the human being for sexual pleasure.\nMental retardation, subnormalities and growth\nMyocardial infarction\nObesity\nParalysis",
+          "Sec 17": "17. 5\n\nFor preparation of containers and closures. - The requirements mentioned in\nthe Schedule do not include requirements of machinery, equipments and premises required for\npreparation of containers and closures for different dosage forms and categories of drugs. The\nsuitability and adequacy of the machinery, equipment and premises shall be examined taking\ninto consideration the requirements of each licensee in this respect.",
+          "Sec 0": "0. 25\n\n2\n-\n3\n-\n- 0.25\n- 3\n4\nNote: AQL denotes Acceptance Quality Level;\nAC denotes Acceptance Number i.e. the maximum allowable number of\ndefectives for\nacceptance of the Batch; and\nR denotes Rejection Number i.e., the minimum number of defectives for rejection of the\nBatch.\n549\nANNEXURE III\n[See Paragraph 4-B and 5-B]\nSAMPLING PLAN FOR BURSTING VOLUME AND PRESSURE TEST.\nBATCH SIZE: 35,001 TO 1.5 LAKH.\nSingle Sampling Plan.\nSample Size 200:\nAQL AC\nR\nBATCH SIZE: 150001 LAKHS TO 5 LAKHS",
+          "Sec 41": "41. .\n\nAtracurium besylate injection\nAclarubicin",
+          "Sec 42": "42. .\n\nAtorvastatin\nAlbendazole",
+          "Sec 44": "44. .\n\nAzathioprine\nAlclometasone dipropionate",
+          "Sec 49": "49. .\n\nBambuterol\nAlendronate sodium",
+          "Sec 50": "50. .\n\nBarbituric acid\nAlopurinol",
+          "Sec 55": "55. .\n\nBetahistine dihydrochloride\nAmifostine",
+          "Sec 58": "58. .\n\nKanamycin Sulphate Injection.\nKanamycin Acid Sulphate Powder\nMitomycin C\nNeomycin Sulphate.\nNystatin\n24\n48\n48\n48\n36",
+          "Sec 60": "60. .\n\nBifonazole\nAmino salicylic acid",
+          "Sec 61": "61. .\n\nBimatoprost\nAmiodarone hydrochloride",
+          "Sec 63": "63. .\n\nBiphenyl acetic acid\nAmlodipine besylate",
+          "Sec 64": "64. .\n\nBitoscanate\nAmoscanate",
+          "Sec 67": "67. .\n\nOleandomycin Phosphate sterile\nOleandomycin Phosphate non sterile\nOxytetracline Hydrochloride\nOxytetracycline Hydrochloride Capsules.\nOxytetracycline Hydrochloride Tablets\nOxytetracycline Hydrochloride Injection\nOxytetracycline Hydrochloride Ointment\nPenicillin Crystalline\nPenicillin Tablets\n24\n36\n36\n36\n24\n24\n36\n36\n18",
+          "Sec 69": "69. .\n\nBudesonide\n& progestational substances",
+          "Sec 70": "70. .\n\nBulaquine\nAntibiotics",
+          "Sec 71": "71. .\n\nBupivacaine hydrochloride\nApraclonidine",
+          "Sec 73": "73. .\n\nBuspirone\nOrganic compound of arsenic",
+          "Sec 74": "74. .\n\nButenafine hydrochloride\nArteether",
+          "Sec 75": "75. .\n\nButorphanol tartrate\nArtemether\nSubs. by G.S.R. No.160(E), dated 16.3.2006 .\nOmitted by G.S.R 588(E) dated 30-8-2013\nOmitted by G.S.R 602(E) dated 19-7-2010\nOmitted by G.S.R 724(E) dated 7-11-2013\n401",
+          "Sec 99": "99. .\n\n100.\n101.\n102.\n103.\n104.\n105.\n106.\n107.\n108.\n109.\n110.\n111.\n112.\n113.\n114.\n115.\n116.\n117.\n118.\n119.\n120.\n121.",
+          "Sec 85": "85. .\n\n3\nBenzathin Penicillin G\nPotassium Phenoxy Methyl Penicillin\nPotassium Phenoxy Methyl PenicillinTablets\nPolymixin B Sulphate\nPolymixin B Sulphate Ointment or Powder\nRifampicin\nRifampicin Capsules\nSpramycin Base\nStrepromycin Injection.\nStreptomycin Ointment\nStreptomycin Tablets\nStreptomycin Sulphate\nTetracycline Base\nTetracycline Hydrochloride\nTetracycline Hydrochloride Capsules\nTetracycline Tablets\nTyrothricin\nVITAMINS"
+        };
+
+        // Tooltip element
+        const tooltip = document.createElement('div');
+        tooltip.id = 'citation-tooltip';
+        tooltip.innerHTML = '<div class="tooltip-key" id="tt-key"></div><hr class="tooltip-divider"><div class="tooltip-body" id="tt-body"></div><div class="tooltip-hint">Click to open full text →</div>';
+        document.body.appendChild(tooltip);
+
+        let tooltipTimer = null;
+
+        function showTooltip(el, key, text) {
+            clearTimeout(tooltipTimer);
+            tooltipTimer = setTimeout(() => {
+                document.getElementById('tt-key').textContent = key;
+                document.getElementById('tt-body').textContent = text.slice(0, 150) + (text.length > 150 ? '…' : '');
+                tooltip.classList.add('visible');
+                positionTooltip(el);
+            }, 200);
+        }
+
+        function hideTooltip() {
+            clearTimeout(tooltipTimer);
+            tooltip.classList.remove('visible');
+        }
+
+        function positionTooltip(el) {
+            const r = el.getBoundingClientRect();
+            const tw = tooltip.offsetWidth;
+            let left = r.left;
+            let top = r.top - tooltip.offsetHeight - 10;
+            if (left + tw > window.innerWidth - 10) left = window.innerWidth - tw - 10;
+            if (top < 10) top = r.bottom + 10;
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+        }
+
+        function openLawPanel(key, text) {
+            const panel = document.getElementById('law-panel');
+            const wrapper = document.getElementById('app-wrapper');
+            document.getElementById('law-panel-badge').textContent = key;
+            document.getElementById('law-panel-secnum').textContent = key;
+
+            // Update footer PDF link with correct page number
+            const page = citationPages[key] || 1;
+            document.querySelector('.law-panel-footer a').href = PDF_BASE + '#page=' + page;
+
+            // Handle missing legalText gracefully
+            const textContent = legalText[key] || `${key}\n\nFull text not available inline. Click "Open full PDF →" below to view this section in the official Act.`;
+
+            // Escape HTML in text, then highlight key term
+            const safe = textContent.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            const shortKey = key.split('(')[0].trim().replace(/s$/,'');
+            const highlighted = safe.replace(new RegExp('(' + shortKey.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\S*)', 'gi'), '<span class="law-panel-highlight">$1</span>');
+            document.getElementById('law-panel-text').innerHTML = highlighted;
+
+            panel.classList.add('open');
+            wrapper.classList.add('panel-open');
+
+            // Scroll to first highlight
+            requestAnimationFrame(() => {
+                const h = document.querySelector('#law-panel-body .law-panel-highlight');
+                if (h) h.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                else document.getElementById('law-panel-body').scrollTop = 0;
+            });
+        }
+
+        function closeLawPanel() {
+            document.getElementById('law-panel').classList.remove('open');
+            document.getElementById('app-wrapper').classList.remove('panel-open');
+        }
+
+        function resolveCitationKey(raw) {
+            const k = raw.trim();
+            if (legalText[k]) return k;
+            // Try first segment before comma
+            const first = k.split(',')[0].trim();
+            if (legalText[first]) return first;
+            // Try first segment before space after "Sec"/"Rule"/"Schedule"
+            const parts = k.split(/[,\s]+/);
+            for (let i = parts.length; i > 0; i--) {
+                const attempt = parts.slice(0, i).join(' ');
+                if (legalText[attempt]) return attempt;
+            }
+            // Fallback: return raw key anyway so panel opens with "refer to PDF" message
+            return k;
+        }
+
+        function activateCitationLinks() {
+            document.querySelectorAll('.citation').forEach(el => {
+                const text = el.textContent;
+                const newHTML = text.replace(/\[([^\]]+)\]/g, (match, key) => {
+                    let page = citationPages[key.trim()];
+                    if (!page) {
+                        const firstKey = key.split(',')[0].trim();
+                        page = citationPages[firstKey];
+                    }
+                    if (page) {
+                        return `[<a href="${PDF_BASE}#page=${page}" target="_blank" class="citation-link" data-ckey="${key.trim()}" title="Open PDF at page ${page}">${key}</a>]`;
+                    }
+                    // still linkify if we have legalText even without page
+                    const resolved = resolveCitationKey(key);
+                    if (resolved) {
+                        return `[<a href="#" class="citation-link" data-ckey="${key.trim()}">${key}</a>]`;
+                    }
+                    return match;
+                });
+                el.innerHTML = newHTML;
+            });
+
+            // Attach events via delegation
+            document.addEventListener('mouseover', e => {
+                const a = e.target.closest('.citation-link');
+                if (!a) return;
+                const raw = a.dataset.ckey || a.textContent;
+                const resolved = resolveCitationKey(raw);
+                if (resolved) {
+                    const tooltipText = legalText[resolved] || `${resolved} — Click to open section. Full text available in PDF.`;
+                    showTooltip(a, resolved, tooltipText);
+                }
+            });
+
+            document.addEventListener('mouseout', e => {
+                if (!e.target.closest('.citation-link')) return;
+                hideTooltip();
+            });
+
+            document.addEventListener('click', e => {
+                const a = e.target.closest('.citation-link');
+                if (!a) return;
+                const raw = a.dataset.ckey || a.textContent;
+                const resolved = resolveCitationKey(raw);
+                if (resolved) {
+                    e.preventDefault();
+                    hideTooltip();
+                    openLawPanel(resolved, legalText[resolved]);
+                }
+            });
+        }
+
+        activateCitationLinks();
+    </script>
+</body>
+</html>
