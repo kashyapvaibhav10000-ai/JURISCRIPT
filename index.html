@@ -1951,7 +1951,7 @@
             <div class="law-panel-text" id="law-panel-text"></div>
         </div>
         <div class="law-panel-footer">
-            <a href="file:///home/vaibhav/JURISCRIPT/drugs_act.pdf" target="_blank">Open full PDF →</a>
+            <a href="./drugs_act.pdf" target="_blank">Open full PDF →</a>
         </div>
     </div><!-- end #law-panel -->
 
@@ -2056,7 +2056,7 @@
             "Schedule H1": 392, "Schedule X": 398, "Schedule E1": 360
         };
 
-        const PDF_BASE = "file:///home/vaibhav/JURISCRIPT/drugs_act.pdf";
+        const PDF_BASE = "./drugs_act.pdf";
 
         const legalText = {
             "Sec 2": "2. Application of other laws not barred.\n\nThe provisions of this Act shall be in addition to and not in derogation of, the Dangerous Drugs Act, 1930, and any other law for the time being in force.",
@@ -2279,7 +2279,7 @@
             document.querySelector('.law-panel-footer a').href = PDF_BASE + '#page=' + page;
 
             // Handle missing legalText gracefully
-            const textContent = legalText[key] || `${key}\n\nFull text not available inline. Click "Open full PDF →" below to view this section in the official Act.`;
+            const textContent = legalText[key] || `${key}\n\nView in PDF above ↑`;
 
             // Escape HTML in text, then highlight key term
             const safe = textContent.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
