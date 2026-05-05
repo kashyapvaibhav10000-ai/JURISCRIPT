@@ -111,6 +111,26 @@
     .nav-links a.active {
       color: var(--teal-light);
     }
+    .nav-pdf-btn {
+      margin-left: auto;
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0.4rem 0.9rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: background 0.2s;
+    }
+    .nav-pdf-btn:hover { background: var(--teal-light); color: var(--navy); }
+    /* section scroll offset for sticky nav */
+    section[id] { scroll-margin-top: 68px; }
     /* hamburger */
     .nav-toggle {
       display: none;
@@ -862,6 +882,7 @@
       <li><a href="#faq" data-section="faq">FAQ</a></li>
       <li><a href="#penalty" data-section="penalty">Penalty Matrix</a></li>
     </ul>
+    <button class="nav-pdf-btn" id="nav-pdf-btn" onclick="openPdfAtCurrentSection()" title="Open full PDF at relevant section">⎙ Open PDF</button>
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
       <span></span><span></span><span></span>
     </button>
@@ -1717,11 +1738,11 @@ const DT_TREES = {
   2: {
     name: "Is This Drug Legal to Sell?",
     nodes: {
-      q1: { question: "Is the drug listed in Schedule E1 (banned drugs)?", answers: [{ label:"Yes", next:"r_banned" },{ label:"No", next:"q2" }] },
-      q2: { question: "Does the drug meet quality standards (Indian Pharmacopoeia)?", answers: [{ label:"No", next:"r_substandard" },{ label:"Yes", next:"q3" }] },
+      q1: { question: "Has CDSCO issued a notification banning this drug's manufacture or sale (Sec 26A)?", answers: [{ label:"Yes — it is banned", next:"r_banned" },{ label:"No — not under ban", next:"q2" }] },
+      q2: { question: "Is the drug adulterated, spurious, or misbranded?", answers: [{ label:"Yes", next:"r_substandard" },{ label:"No", next:"q3" }] },
       q3: { question: "Is labelling compliant? (name, manufacturer, batch, expiry)", answers: [{ label:"No", next:"r_label" },{ label:"Yes", next:"q4" }] },
       q4: { question: "Is the drug listed in Schedule H, H1, or X?", answers: [{ label:"Yes — Schedule H / H1", next:"r_schedh" },{ label:"Yes — Schedule X", next:"r_schedx" },{ label:"No", next:"r_otc" }] },
-      r_banned:      { type:"blocked",     icon:"✗", title:"Cannot Sell",                                   body:"Banned drug.\n[Sec 10, Schedule E1]" },
+      r_banned:      { type:"blocked",     icon:"✗", title:"Cannot Sell",                                   body:"Drug banned by CDSCO notification — manufacture, sale and stocking prohibited.\n[Sec 26A]" },
       r_substandard: { type:"blocked",     icon:"✗", title:"Cannot Sell",                                   body:"Substandard quality.\n[Sec 8, Sec 27]" },
       r_label:       { type:"blocked",     icon:"✗", title:"Cannot Sell",                                   body:"Non-compliant labelling.\n[Rule 96, Sec 28]" },
       r_schedh:      { type:"conditional", icon:"⚠", title:"Conditional — Prescription Required",           body:"Can only sell on valid medical prescription.\n[Rule 65(3)]" },
@@ -1790,7 +1811,8 @@ const citationPages = {
   "Rules 64-65":117,"Rule 69":125,"Rule 70":126,"Rules 69-70":125,"Rule 71":127,"Rule 74":129,
   "Rule 76":130,"Rule 96":148,"Rule 122A":178,"Rule 122C":179,"Rule 122D":180,"Rule 122E":181,
   "Rules 122A-122N":178,"Rules 144-157":198,"Rules 150-169":204,"Schedule M":312,
-  "Schedule M, Part 1":313,"Schedule H":380,"Schedule H1":392,"Schedule X":398,"Schedule E1":360
+  "Schedule M, Part 1":313,"Schedule H":380,"Schedule H1":392,"Schedule X":398,"Schedule E1":360,
+  "Sec 26A":43
 };
 
 const PDF_BASE = "./drugs_act.pdf";
@@ -1804,6 +1826,7 @@ const legalText = {
   "Sec 17B": "17B. Spurious drugs.—For the purposes of this Chapter, a drug shall be deemed to be spurious—\n(a) if it is manufactured under a name which belongs to another drug;\n(b) if it is an imitation of, or is a substitute for, another drug;\n(c) if the label or container bears the name of a fictitious manufacturer;\n(d) if it has been substituted wholly or in part by another drug or substance;\n(e) if it purports to be the product of a manufacturer of whom it is not truly a product.",
   "Sec 10": "10. Prohibition of import of certain drugs or cosmetics.—No person shall import—\n(a) any drug or cosmetic which is not of standard quality;\n(b) any misbranded drug or misbranded or spurious cosmetic;\n(bb) any adulterated or spurious drug;\n(c) any drug or cosmetic for the import of which a licence is prescribed, otherwise than under such licence;\n(d) any patent or proprietary medicine, unless there is displayed the true formula or list of active ingredients;\n(f) any drug or cosmetic the import of which is prohibited by rule.",
   "Sec 18": "18. Prohibition of manufacture and sale of certain drugs and cosmetics.—No person shall manufacture for sale or for distribution, or sell, or stock or exhibit or offer for sale, or distribute—\n(a) any drug which is not of a standard quality, or is misbranded, adulterated or spurious;\n(c) manufacture for sale or for distribution any drug or cosmetic, except under, and in accordance with the conditions of, a licence issued for such purpose under this Chapter.",
+  "Sec 26A": "Section 26A — Power of Central Government to regulate or restrict manufacture, etc., of drugs.\n\nThe Central Government, if satisfied that a drug is likely to involve any risk to human beings or animals, or that a drug does not have the therapeutic value claimed or purported to be claimed for it, may by notification in the Official Gazette, prohibit the manufacture, sale or distribution of such drug.\n\nDrugs banned under Sec 26A cannot legally be manufactured, stocked, sold or distributed. Violations are prosecuted under Sec 27.",
   "Sec 27": "27. Penalty for manufacture, sale, etc., of drugs in contravention of this Chapter.—\n(a) Spurious or adulterated drug likely to cause death: not less than 10 years to life, fine not less than ₹10 lakh or 3× value;\n(b) Adulterated drug (other): 3-5 years, fine not less than ₹1 lakh or 3× value;\n(c) Spurious drug (other): 7 years to life, fine not less than ₹3 lakh or 3× value;\n(d) Other contraventions: 1-2 years, fine not less than ₹20,000.",
   "Sec 27A": "27A. Penalty for manufacture, sale, etc., of cosmetics in contravention of this Chapter.—\n(i) Spurious or adulterated cosmetic: up to 3 years, fine not less than ₹50,000 or 3× value;\n(ii) Other contraventions: up to 1 year or fine up to ₹20,000, or both.",
   "Sec 28": "28. Penalty for non-disclosure of the name of the manufacturer, etc.—Whoever contravenes the provisions of section 18A or section 24 shall be punishable with imprisonment for a term which may extend to one year, or with fine which shall not be less than twenty thousand rupees or with both.",
@@ -1908,6 +1931,40 @@ function activateCitationLinks() {
     if (resolved) { e.preventDefault(); hideTooltip(); openLawPanel(resolved, legalText[resolved]); }
   });
 }
+
+// ── PDF OPEN AT CURRENT SECTION ──
+const SECTION_PDF_PAGES = {
+  'how-to-use':    1,
+  'topic-map':     1,
+  'role-guides':   22,   // Sec 18 — manufacturing/sale license
+  'decision-trees':1,
+  'faq':           1,
+  'penalty':       31    // Sec 27 — penalties
+};
+let _currentSection = 'how-to-use';
+const _sectionObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) _currentSection = e.target.id; });
+}, { threshold: 0.2 });
+document.querySelectorAll('section[id]').forEach(s => _sectionObs.observe(s));
+
+function openPdfAtCurrentSection() {
+  const page = SECTION_PDF_PAGES[_currentSection] || 1;
+  window.open(PDF_BASE + '#page=' + page, '_blank');
+}
+
+// ── FIX ANCHOR SCROLL (prevent jump-to-top) ──
+document.addEventListener('click', function(e) {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a) return;
+  const hash = a.getAttribute('href');
+  if (!hash || hash === '#') return;
+  const id = hash.slice(1);
+  const target = document.getElementById(id);
+  if (!target) return;
+  e.preventDefault();
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  history.pushState(null, '', hash);
+}, true);
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', () => {
