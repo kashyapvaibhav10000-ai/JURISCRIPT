@@ -1869,7 +1869,8 @@ function openLawPanel(key, text) {
   document.getElementById('law-panel-secnum').textContent = key;
   document.getElementById('law-panel-badge').textContent = key;
   const page = getPageForCitation(key) || 1;
-  document.querySelector('.law-panel-footer a').href = PDF_BASE + '#page=' + page;
+  const pdfUrl = PDF_BASE + '#page=' + page;
+  window.currentPdfUrl = pdfUrl;
   const textContent = text || `${key}\n\nView in PDF above ↑`;
   const safe = textContent.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const shortKey = key.split('(')[0].trim().replace(/s$/, '');
