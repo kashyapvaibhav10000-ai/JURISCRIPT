@@ -683,9 +683,11 @@
     .law-panel-divider { border: none; border-top: 1px solid #30363d; margin-bottom: 1rem; }
     .law-panel-text { color: #e6edf3; font-size: 0.88rem; line-height: 1.8; white-space: pre-wrap; }
     .law-panel-highlight { background: #f0b429; color: #000; border-radius: 2px; padding: 0 3px; }
-    .law-panel-footer { padding: 0.75rem 1rem; border-top: 1px solid #30363d; background: #161b22; flex-shrink: 0; }
+    .law-panel-footer { padding: 0.75rem 1rem; border-top: 1px solid #30363d; background: #161b22; flex-shrink: 0; display: flex; gap: 0.75rem; align-items: center; justify-content: space-between; }
     .law-panel-footer a { color: #8b949e; font-size: 0.8rem; text-decoration: none; }
     .law-panel-footer a:hover { color: #e6edf3; }
+    .law-panel-pdf-btn { background: var(--teal); color: #fff; border: none; border-radius: var(--radius-sm); padding: 0.45rem 1rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
+    .law-panel-pdf-btn:hover { background: var(--teal-light); }
 
     #citation-tooltip {
       position: fixed;
@@ -1615,6 +1617,7 @@
   </div>
   <div class="law-panel-footer">
     <a href="./drugs_act.pdf" target="_blank">Open full PDF →</a>
+    <button class="law-panel-pdf-btn" onclick="openPdfAtCurrentSection()">Open PDF at this Section</button>
   </div>
 </div>
 </div><!-- end #app-wrapper -->
@@ -1885,6 +1888,20 @@ function openLawPanel(key, text) {
 function closeLawPanel() {
   document.getElementById('law-panel').classList.remove('open');
   document.getElementById('app-wrapper').classList.remove('panel-open');
+}
+
+function openPdfAtCurrentSection() {
+  const sectionKey = document.getElementById('law-panel-secnum').textContent.trim();
+  if (!sectionKey) {
+    alert('No section selected');
+    return;
+  }
+  const page = getPageForCitation(sectionKey);
+  if (!page) {
+    alert(`Page mapping not available for "${sectionKey}"`);
+    return;
+  }
+  window.open(PDF_BASE + '#page=' + page, '_blank');
 }
 
 // ── TOOLTIP ──
