@@ -111,24 +111,6 @@
     .nav-links a.active {
       color: var(--teal-light);
     }
-    .nav-pdf-btn {
-      margin-left: auto;
-      background: var(--teal);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius-sm);
-      padding: 0.4rem 0.9rem;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      transition: background 0.2s;
-    }
-    .nav-pdf-btn:hover { background: var(--teal-light); color: var(--navy); }
     /* section scroll offset for sticky nav */
     section[id] { scroll-margin-top: 68px; }
     /* hamburger */
@@ -882,7 +864,6 @@
       <li><a href="#faq" data-section="faq">FAQ</a></li>
       <li><a href="#penalty" data-section="penalty">Penalty Matrix</a></li>
     </ul>
-    <button class="nav-pdf-btn" id="nav-pdf-btn" onclick="openPdfAtCurrentSection()" title="Open full PDF at relevant section">⎙ Open PDF</button>
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
       <span></span><span></span><span></span>
     </button>
@@ -1954,26 +1935,6 @@ function activateCitationLinks() {
     const resolved = resolveCitationKey(raw);
     if (resolved) { e.preventDefault(); hideTooltip(); openLawPanel(resolved, legalText[resolved]); }
   });
-}
-
-// ── PDF OPEN AT CURRENT SECTION ──
-const SECTION_PDF_PAGES = {
-  'how-to-use':    1,
-  'topic-map':     1,
-  'role-guides':   22,   // Sec 18 — manufacturing/sale license
-  'decision-trees':1,
-  'faq':           1,
-  'penalty':       31    // Sec 27 — penalties
-};
-let _currentSection = 'how-to-use';
-const _sectionObs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) _currentSection = e.target.id; });
-}, { threshold: 0.2 });
-document.querySelectorAll('section[id]').forEach(s => _sectionObs.observe(s));
-
-function openPdfAtCurrentSection() {
-  const page = SECTION_PDF_PAGES[_currentSection] || 1;
-  window.open(PDF_BASE + '#page=' + page, '_blank');
 }
 
 // ── FIX ANCHOR SCROLL (prevent jump-to-top) ──
