@@ -1812,7 +1812,14 @@ const citationPages = {
   "Rule 76":130,"Rule 96":148,"Rule 122A":178,"Rule 122C":179,"Rule 122D":180,"Rule 122E":181,
   "Rules 122A-122N":178,"Rules 144-157":198,"Rules 150-169":204,"Schedule M":312,
   "Schedule M, Part 1":313,"Schedule H":380,"Schedule H1":392,"Schedule X":398,"Schedule E1":360,
-  "Sec 26A":43
+  "Sec 26A":43,
+  // Multi-part citation mappings (uses page of first cited item)
+  "Rule 65(1), (2)":118,"Rule 65(3), Rule 65(3)(h)":119,"Rule 96, Sec 28":148,"Rule 35, 36":91,
+  "Schedule M, Rules 71, 74, 76":312,"Sec 10, Rule 33":15,"Sec 10, Rules 33-43":15,
+  "Sec 10, Schedule E1":15,"Sec 11, 12":16,"Sec 11, 12, Sea Customs Act":16,
+  "Sec 17A, 17B, 27":20,"Sec 17A, 27":20,"Sec 17A-17D, Sec 27":20,"Sec 17B, 27":21,
+  "Sec 18, Rule 65":22,"Sec 18, Rule 69":22,"Sec 18, Rule 70":22,"Sec 2, 10, 18, Rules 33-43":4,
+  "Sec 21-23":25,"Sec 8, Sec 27":12,"Sec 9A, 28":13,"Sec 9C, 9D":13,"Sec 3(a), 3A":5
 };
 
 const PDF_BASE = "./drugs_act.pdf";
@@ -1844,9 +1851,12 @@ const legalText = {
 
 function resolveCitationKey(raw) {
   const k = raw.trim();
+  // Try exact match first
   if (legalText[k]) return k;
+  // Try first part before comma (for multi-part citations like "Rule 35, 36")
   const first = k.split(',')[0].trim();
   if (legalText[first]) return first;
+  // Try progressive prefix matching
   const parts = k.split(/[,\s]+/);
   for (let i = parts.length; i > 0; i--) {
     const attempt = parts.slice(0,i).join(' ');
@@ -1855,12 +1865,27 @@ function resolveCitationKey(raw) {
   return k;
 }
 
+function getPageForCitation(raw) {
+  const k = raw.trim();
+  // Try exact match first
+  if (citationPages[k]) return citationPages[k];
+  // Try first part before comma (for multi-part citations like "Rule 35, 36")
+  const first = k.split(',')[0].trim();
+  if (citationPages[first]) return citationPages[first];
+  // Try parts of range notations (e.g., "Sec 21-23" → "Sec 21")
+  if (k.includes('-') && !k.includes('(')) {
+    const rangeParts = k.split('-')[0].trim().match(/([A-Za-z]+\s*\d+)/);
+    if (rangeParts && citationPages[rangeParts[0]]) return citationPages[rangeParts[0]];
+  }
+  return undefined;
+}
+
 function openLawPanel(key, text) {
   const panel = document.getElementById('law-panel');
   const wrapper = document.getElementById('app-wrapper');
   document.getElementById('law-panel-secnum').textContent = key;
   document.getElementById('law-panel-badge').textContent = key;
-  const page = citationPages[key] || 1;
+  const page = getPageForCitation(key) || 1;
   document.querySelector('.law-panel-footer a').href = PDF_BASE + '#page=' + page;
   const textContent = text || `${key}\n\nView in PDF above ↑`;
   const safe = textContent.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -1902,8 +1927,7 @@ function activateCitationLinks() {
   document.querySelectorAll('.citation').forEach(el => {
     const text = el.textContent;
     const newHTML = text.replace(/\[([^\]]+)\]/g, (match, key) => {
-      let page = citationPages[key.trim()];
-      if (!page) { const fk = key.split(',')[0].trim(); page = citationPages[fk]; }
+      let page = getPageForCitation(key.trim());
       if (page) return `[<a href="${PDF_BASE}#page=${page}" target="_blank" class="citation-link" data-ckey="${key.trim()}" title="Open PDF p.${page}">${key}</a>]`;
       const resolved = resolveCitationKey(key);
       if (resolved) return `[<a href="#" class="citation-link" data-ckey="${key.trim()}">${key}</a>]`;
