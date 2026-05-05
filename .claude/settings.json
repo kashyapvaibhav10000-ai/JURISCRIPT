@@ -5,7 +5,9 @@
       "Bash(grep -n \"^SCHEDULE M\\\\|^Schedule M\\\\b\\\\|SCHEDULE M$\\\\|^SCHEDULE H\\\\b\\\\|^Schedule H\\\\b\\\\|^SCHEDULE H1\\\\|^Schedule H1\\\\|^SCHEDULE X\\\\b\\\\|^Schedule X\\\\b\" /home/vaibhav/JURISCRIPT/drugs_act_text.txt)",
       "Bash(grep -n \"^\\\\[SCHEDULE H\\\\b\\\\|^SCHEDULE H$\\\\|^Schedule H$\\\\|^SCHEDULE H \" /home/vaibhav/JURISCRIPT/drugs_act_text.txt)",
       "Bash(grep -n \"^\\\\[SCHEDULE H$\\\\|^SCHEDULE H$\\\\|\\\\[SCHEDULE H\\\\]\" /home/vaibhav/JURISCRIPT/drugs_act_text.txt)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(pdfinfo /home/vaibhav/JURISCRIPT/drugs_act.pdf)",
+      "Bash(pdftotext -layout -f 1 -l 50 /home/vaibhav/JURISCRIPT/drugs_act.pdf /tmp/drugs_pages.txt)"
     ]
   }
 }
